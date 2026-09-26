@@ -4,16 +4,20 @@ import { catalogDescriptors, catalogSignature, chromeSignature, cloneCatalogTemp
 import { createLegacyAdapter } from './legacy.js';
 import { createModernAdapter } from './modern.js';
 import { DEFAULT_SETTINGS, normalizeSettings, settingsSignature } from './settings.js';
-import { findSurface, isTvLayout, layoutMode } from './shared.js';
+import { findSurface, layoutMode } from './shared.js';
 
-const MAIN_ROOT_CLASS = 'sleekfin-main-ui';
 const ROOT_BOOT_LOADING_CLASS = 'sleekfin-header-boot-loading';
 const ROOT_CLASS = 'sleekfin-header-mounted';
 const ROOT_LOADING_CLASS = 'sleekfin-header-loading';
 const SOURCE_CACHE_KEY = 'sleekfin:header-sources:v2';
 const SETTINGS_CHANGED_EVENT = 'sleekfin:header-settings-changed';
 const WINDOW_EVENTS = ['hashchange', 'pageshow', 'popstate', 'resize', 'scroll'];
+const PUBLIC_PATHS = new Set(['/addserver', '/selectserver', '/login', '/forgotpassword', '/forgotpasswordpin', '/wizardremoteaccess', '/wizardfinish', '/wizardlibrary', '/wizardsettings', '/wizardstart', '/wizarduser']);
 const DISABLED_SETTINGS = Object.freeze({ ...DEFAULT_SETTINGS, enabled: false });
+const PUBLIC_SETTINGS = Object.freeze(normalizeSettings({
+  enabled: document.documentElement.dataset.sleekfinHeaderEnabled === 'true',
+  height: Number.parseFloat(document.documentElement.style.getPropertyValue('--sleekfin-header-height')) || DEFAULT_SETTINGS.height,
+}));
 
 function sourceTemplate(html) {
   const holder = document.createElement('template');
@@ -26,8 +30,9 @@ function currentScope() {
   try {
     const apiClient = window.ApiClient;
     const serverId = apiClient?.serverId?.() || apiClient?.serverInfo?.()?.Id || '';
-    const userId = apiClient?.getCurrentUserId?.() || '';
-    return { key: serverId ? `${serverId}:${userId}` : '', serverId, userId };
+    const route = (window.location.hash.slice(1) || window.location.pathname).split('?')[0].toLowerCase();
+    const userId = PUBLIC_PATHS.has(route) || route === '/wizard' || route.startsWith('/wizard/') ? '' : apiClient?.getCurrentUserId?.() || '';
+    return { key: serverId && userId ? `${serverId}:${userId}` : '', serverId, userId };
   } catch {
     return { key: '', serverId: '', userId: '' };
   }
@@ -96,8 +101,11 @@ function createHeaderFeature() {
     chromeSignature: chromeSignature(cached.chrome),
     loadingTimer: 0,
     mount: null,
+    playerHeader: null,
+    playerObserver: null,
+    publicSettings: PUBLIC_SETTINGS,
     reconcileTimer: 0,
-    settings: DISABLED_SETTINGS,
+    settings: PUBLIC_SETTINGS,
     settingsResolved: false,
     settingsRequest: 0,
     settingsRetryDelay: 1000,
@@ -160,7 +168,26 @@ function createHeaderFeature() {
 
   function syncServerScope() {
     const scope = currentScope();
-    if (!scope.key) return false;
+    if (!scope.key) {
+      if (!state.settingsScope) return false;
+
+      state.settingsScope = '';
+      state.settingsRequest += 1;
+      window.clearTimeout(state.settingsRetryTimer);
+      state.settingsRetryTimer = 0;
+      state.catalog = [];
+      state.catalogSignature = catalogSignature([]);
+      state.chrome = {};
+      state.chromeSignature = chromeSignature({});
+      state.sourceCacheScope = '';
+      try {
+        window.sessionStorage.removeItem(SOURCE_CACHE_KEY);
+      } catch {}
+      brand.resetServer();
+      unmount();
+      notifyCatalogChanged();
+      return true;
+    }
 
     hydrateHeaderSourceCache();
     if (scope.key === state.settingsScope) return false;
@@ -178,7 +205,7 @@ function createHeaderFeature() {
   }
 
   function captureHeaderSources(surface) {
-    if (!surface || isDashboardRoute()) return;
+    if (!surface || surface.header.classList.contains('osdHeader') || isDashboardRoute() || !currentScope().userId) return;
 
     const records = discoverHeaderControls(surface);
     const signature = catalogSignature(records);
@@ -234,12 +261,24 @@ function createHeaderFeature() {
     document.documentElement.classList.remove(ROOT_CLASS);
   }
 
+  function watchPlayerHeader(header) {
+    if (state.playerHeader === header) return;
+    state.playerObserver?.disconnect();
+    state.playerHeader = header;
+    state.playerObserver = null;
+    if (header) {
+      state.playerObserver = new MutationObserver(scheduleReconcile);
+      state.playerObserver.observe(header, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+  }
+
   function reconcile() {
     if (!state.started) return;
     if (syncServerScope()) requestSettings();
     const surface = findSurface();
+    watchPlayerHeader(state.settings.enabled && surface?.header.classList.contains('osdHeader') ? surface.header : null);
     captureHeaderSources(surface);
-    if (!state.settings.enabled || isTvLayout() || !document.documentElement.classList.contains(MAIN_ROOT_CLASS)) {
+    if (!state.settings.enabled) {
       unmount();
       if (state.settingsResolved) finishLoading();
       return;
@@ -248,6 +287,14 @@ function createHeaderFeature() {
     if (!surface) {
       unmount();
       prepareLoading();
+      return;
+    }
+
+    // Keep the OSD mount while Jellyfin fades it out
+    if (surface.header.classList.contains('osdHeader') && !dom.isVisible(surface.header)) {
+      state.mount?.overflow?.close();
+      if (state.mount?.header !== surface.header) unmount();
+      finishLoading();
       return;
     }
 
@@ -265,13 +312,6 @@ function createHeaderFeature() {
 
   function scheduleReconcile() {
     if (!state.started) return;
-    if (!document.documentElement.classList.contains(MAIN_ROOT_CLASS)) {
-      window.clearTimeout(state.reconcileTimer);
-      state.reconcileTimer = 0;
-      unmount();
-      finishLoading();
-      return;
-    }
     if (state.reconcileTimer) return;
 
     state.reconcileTimer = window.setTimeout(() => {
@@ -289,6 +329,15 @@ function createHeaderFeature() {
   function requestSettings() {
     if (!state.started) return;
 
+    const scope = currentScope();
+    if (!scope.userId) {
+      syncServerScope();
+      state.settingsResolved = true;
+      state.settings = state.publicSettings;
+      scheduleReconcile();
+      return;
+    }
+
     const apiClient = window.ApiClient;
     if (!apiClient || typeof apiClient.ajax !== 'function' || typeof apiClient.getUrl !== 'function') {
       window.clearTimeout(state.settingsRetryTimer);
@@ -299,11 +348,6 @@ function createHeaderFeature() {
     syncServerScope();
     window.clearTimeout(state.settingsRetryTimer);
     state.settingsRetryTimer = 0;
-    const scope = currentScope();
-    if (!scope.userId) {
-      state.settings = DISABLED_SETTINGS;
-      return;
-    }
     const requestScope = scope.key;
     const request = ++state.settingsRequest;
     apiClient
@@ -313,6 +357,7 @@ function createHeaderFeature() {
 
         hydrateHeaderSourceCache();
         const normalized = normalizeSettings(settings);
+        state.publicSettings = normalizeSettings({ enabled: normalized.enabled, height: normalized.height });
         state.settingsResolved = true;
         state.settingsRetryDelay = 1000;
         if (settingsSignature(normalized) !== settingsSignature(state.settings)) {
@@ -364,6 +409,7 @@ function createHeaderFeature() {
     window.removeEventListener(SETTINGS_CHANGED_EVENT, requestSettings);
     state.stopWatching?.();
     state.stopWatching = null;
+    watchPlayerHeader(null);
     unmount();
     finishLoading();
   }

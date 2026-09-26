@@ -1,6 +1,6 @@
 import { dom, h, render } from '../../shared/runtime.js';
 import { HeaderOverflowDrawer } from './HeaderOverflowDrawer.jsx';
-import { cloneSourceTemplate, currentSource, discoverHeaderControls, legacyAlias, refreshRecordVisual } from './inventory.js';
+import { cloneSourceTemplate, currentSource, discoverHeaderControls, isDashboardRoute, legacyAlias, refreshRecordVisual } from './inventory.js';
 import { mark, setStyle } from './shared.js';
 
 function recordForKey(key, discoveries) {
@@ -31,7 +31,7 @@ function resolveRecords(mount, settings) {
   settings.itemOrder.forEach((key) => {
     usedKeys.add(key);
     if (key === 'space' || key === 'separator') {
-      if (!settings.hiddenItems.includes(key)) records.push({ key, source: null });
+      if (!settings.hiddenItems.includes(key) && (key !== 'separator' || !isDashboardRoute())) records.push({ key, source: null });
       return;
     }
 
@@ -169,6 +169,7 @@ function createOverflowController(mount, toggle) {
   });
 
   return {
+    close,
     destroy() {
       render(null, root);
       root.remove();
@@ -337,10 +338,9 @@ export function needsProxyReplacement(mount, settings) {
   const resolved = resolveRecords(mount, settings);
   if (Boolean(mount.proxy) !== resolved.customized) return true;
   if (!mount.proxy) return false;
-  const records = resolved.records.filter((record) => record.source);
-  if (!dom.isConnected(mount.proxy) || records.length !== mount.proxyRecords.length || resolved.hidden.length !== mount.hiddenRecords.length) return true;
+  if (!dom.isConnected(mount.proxy) || resolved.records.length !== mount.proxyEntries.length || resolved.hidden.length !== mount.hiddenRecords.length) return true;
   if (resolved.hidden.some((record, index) => record.source !== mount.hiddenRecords[index].source)) return true;
-  return records.some((record, index) => record.key !== mount.proxyRecords[index].key || record.source !== mount.proxyRecords[index].source);
+  return resolved.records.some((record, index) => record.key !== mount.proxyEntries[index].record.key || record.source !== mount.proxyEntries[index].record.source);
 }
 
 export function refreshHeaderProxy(mount) {

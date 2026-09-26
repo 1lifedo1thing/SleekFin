@@ -144,7 +144,7 @@ html.sleekfin-header-mounted [data-sleekfin-legacy-left] .pageTitle {
 }
 
 @media (max-width: 899px) {
-    html.sleekfin-header-mounted [data-sleekfin-legacy-cluster] {
+    html.sleekfin-header-mounted:not(.layout-tv) body:not(.layout-tv) [data-sleekfin-legacy-cluster] {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
         background: transparent;

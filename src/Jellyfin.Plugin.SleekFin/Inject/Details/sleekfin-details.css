@@ -70,10 +70,6 @@ html.sleekfin-details-mounted {
     background: var(--sleekfin-background);
 }
 
-html.sleekfin-details-mounted :is([data-sleekfin-header], .sleekfin-header-fallback-brand, header.MuiAppBar-root, .skinHeader) {
-    display: none !important;
-}
-
 html.sleekfin-details-mounted body {
     overflow: hidden !important;
 }

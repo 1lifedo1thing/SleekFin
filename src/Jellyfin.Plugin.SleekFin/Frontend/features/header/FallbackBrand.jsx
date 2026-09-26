@@ -80,7 +80,7 @@ export function createBrandController(isActive) {
     state.fallback = null;
   }
 
-  function ensureFallback() {
+  function ensureFallback(parent = document.body) {
     requestServerName();
     if (dom.isConnected(state.fallback)) return;
 
@@ -88,7 +88,7 @@ export function createBrandController(isActive) {
     const fallback = document.createElement('a');
     fallback.className = 'sleekfin-header-fallback-brand';
     fallback.href = '#/';
-    document.body.appendChild(fallback);
+    parent.appendChild(fallback);
     state.fallback = fallback;
     renderFallback();
   }
