@@ -110,6 +110,8 @@ public sealed class PluginConfiguration : BasePluginConfiguration
 
     public bool DetailsEnabled { get; set; } = true;
 
+    public bool DetailsSeasonPickerEnabled { get; set; } = false;
+
     public string HeroContentOrder { get; set; } = "ContinueWatching,NextUp,LatestMovies,LatestShows,Favorites";
 
     public bool HeroRandomized { get; set; }

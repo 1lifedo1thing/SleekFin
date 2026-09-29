@@ -3,6 +3,7 @@ import { createActions } from './actions.js';
 import { createEpisodes } from './episodes.jsx';
 import { createHero } from './hero.jsx';
 import { createSections } from './sections.jsx';
+import { loadSettings } from './settings.js';
 import { createSimilar } from './similar.jsx';
 
 const CONCEALED_CLASS = 'sleekfin-details-concealed';
@@ -30,6 +31,7 @@ const state = {
   previousPage: null,
   reconcileTimer: 0,
   retryTimer: 0,
+  seasonPickerEnabled: false,
   seasons: [],
   started: false,
   stopHidden: null,
@@ -128,8 +130,53 @@ function routeClient(serverId) {
   return String(client.serverId()).toLowerCase() === serverId.toLowerCase() ? client : null;
 }
 
+// The picker is chosen when the episodes component is created and, once mounted, nothing re-creates
+// it, so this has to resolve before that happens. It is deliberately not part of the item request: an
+// optional setting must not gate the detail page, and a settings request that never settles would
+// otherwise leave every page, including Movies, waiting. Memoized because the value is one global
+// plugin setting, and bounded because a stalled settings request has to fall back to the native
+// select. The seasons request that runs alongside it has no such timeout.
+const SETTINGS_TIMEOUT_MS = 4000;
+const SETTINGS_DISABLED = Object.freeze({ seasonPickerEnabled: false });
+let seasonPickerSetting = null;
+
+function loadSeasonPickerSetting(client) {
+  if (!seasonPickerSetting) {
+    let request;
+    try {
+      request = loadSettings(client);
+    } catch {
+      // A synchronous throw from the client still has to behave like a failed request.
+      request = Promise.reject(new Error('settings unavailable'));
+    }
+    let answered = false;
+    const fromServer = request
+      .then((settings) => {
+        answered = true;
+        return { seasonPickerEnabled: settings?.seasonPickerEnabled === true };
+      })
+      .catch(() => SETTINGS_DISABLED);
+    seasonPickerSetting = Promise.race([
+      fromServer,
+      new Promise((resolve) => window.setTimeout(() => resolve(SETTINGS_DISABLED), SETTINGS_TIMEOUT_MS)),
+    ]).then((settings) => {
+      // Only a real answer is cached. A failure or a timeout is retried on the next Series, so one
+      // bad request cannot leave a working server stuck on the native select for the whole session.
+      if (!answered) seasonPickerSetting = null;
+      return settings;
+    });
+  }
+  return seasonPickerSetting;
+}
+
 function loadSeasons(client, userId, mediaItem) {
-  if (mediaItem.Type === 'Series') return client.getSeasons(mediaItem.Id, { userId });
+  // Only a Series renders the season picker, so only a Series asks for the setting.
+  if (mediaItem.Type === 'Series') {
+    return Promise.all([client.getSeasons(mediaItem.Id, { userId }), loadSeasonPickerSetting(client)]).then(([seasons, settings]) => {
+      state.seasonPickerEnabled = settings.seasonPickerEnabled;
+      return seasons;
+    });
+  }
   if (mediaItem.Type === 'Season') return Promise.resolve({ Items: [mediaItem] });
   if (mediaItem.Type === 'Episode' && mediaItem.SeasonId) return client.getItem(userId, mediaItem.SeasonId).then((season) => ({ Items: [season] }));
   return Promise.resolve({ Items: [] });
@@ -161,7 +208,7 @@ function mount() {
   const actions = createActions(hero.actions, state.item.Type === 'Episode');
   const sections = createSections(state.page);
   const similar = createSimilar(state.page);
-  const episodes = ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length ? createEpisodes(state.page, state.item, state.seasons) : null;
+  const episodes = ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length ? createEpisodes(state.page, state.item, state.seasons, state.seasonPickerEnabled) : null;
 
   state.mount = {
     actions,
@@ -200,6 +247,8 @@ function load(id, serverId) {
   const isCurrent = () => generation === state.generation && id === state.currentId;
   state.loadingId = id;
 
+  // The settings request is started lazily by loadSeasons for a Series only, so it can never hold up
+  // the item request or a non-Series page.
   client.getItem(userId, id)
     .then((mediaItem) => {
       if (!isCurrent()) return;
@@ -217,7 +266,7 @@ function load(id, serverId) {
           if (state.mount) {
             state.mount.hero.render(state.item, state.seasons);
             if (!state.mount.episodes && ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length) {
-              state.mount.episodes = createEpisodes(state.page, state.item, state.seasons);
+              state.mount.episodes = createEpisodes(state.page, state.item, state.seasons, state.seasonPickerEnabled);
             }
           }
           scheduleReconcile();

@@ -1605,6 +1605,18 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="sleekfin-toggle-row">
+                                <div class="sleekfin-toggle-copy">
+                                    <label class="sleekfin-toggle-label" for="sleekFinDetailsSeasonPickerEnabled">Use SleekFin season picker</label>
+                                    <div class="sleekfin-field-description">Replaces the native season dropdown on series pages with a SleekFin-styled picker. Off by default, because native inputs behave more reliably on older devices.</div>
+                                </div>
+                                <div class="sleekfin-toggle-actions">
+                                    <label class="sleekfin-toggle">
+                                        <input id="sleekFinDetailsSeasonPickerEnabled" type="checkbox" />
+                                        <span class="sleekfin-toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -2120,6 +2132,7 @@
             var enabledInput = document.getElementById('sleekFinEnabled');
             var heroEnabledInput = document.getElementById('sleekFinHeroEnabled');
             var detailsEnabledInput = document.getElementById('sleekFinDetailsEnabled');
+            var detailsSeasonPickerInput = document.getElementById('sleekFinDetailsSeasonPickerEnabled');
             var randomizedInput = document.getElementById('sleekFinHeroRandomized');
             var sources = document.getElementById('sleekFinHeroSources');
             var dependencyStatus = document.getElementById('sleekFinDependencyStatus');
@@ -3693,6 +3706,7 @@
                         enabledInput.checked = readValue(configuration, 'HeaderEnabled') !== false;
                         heroEnabledInput.checked = readValue(configuration, 'HeroEnabled') !== false;
                         detailsEnabledInput.checked = readValue(configuration, 'DetailsEnabled') !== false;
+                        detailsSeasonPickerInput.checked = readValue(configuration, 'DetailsSeasonPickerEnabled') === true;
                         applyHeroConfiguration(configuration);
                         applyBuilderConfiguration(configuration);
                         loadPreviewServerName(request);
@@ -3763,6 +3777,7 @@
                         configuration.HeaderEnabled = enabledInput.checked;
                         configuration.HeroEnabled = heroEnabledInput.checked;
                         configuration.DetailsEnabled = detailsEnabledInput.checked;
+                        configuration.DetailsSeasonPickerEnabled = detailsSeasonPickerInput.checked;
                         saveHeroConfiguration(configuration, contentOrder);
                         saveBuilderConfiguration(configuration);
                         return ApiClient.updatePluginConfiguration(PLUGIN_ID, configuration);
