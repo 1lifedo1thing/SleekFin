@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.2.3",
+        "changelog": "Restored scroll position when navigating to previous pages per history entry (going back/forwards)",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.2.3/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "DFCFD1DBF40BF4751A23E945371CD6F0",
+        "timestamp": "2026-10-03T21:33:44.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.2.2",
         "changelog": "Fixed SleekFin styling on SeerrFin tabs in Modern layout",
         "targetAbi": "12.0.0.0",
