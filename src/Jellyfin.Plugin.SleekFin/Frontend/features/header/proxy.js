@@ -1,6 +1,6 @@
 import { dom, h, render } from '../../shared/runtime.js';
 import { HeaderOverflowDrawer } from './HeaderOverflowDrawer.jsx';
-import { cloneSourceTemplate, currentSource, discoverHeaderControls, isDashboardRoute, legacyAlias, refreshRecordVisual } from './inventory.js';
+import { cloneSourceTemplate, currentSource, discoverHeaderControls, legacyAlias, refreshRecordVisual } from './inventory.js';
 import { mark, setStyle } from './shared.js';
 
 function recordForKey(key, discoveries) {
@@ -31,7 +31,7 @@ function resolveRecords(mount, settings) {
   settings.itemOrder.forEach((key) => {
     usedKeys.add(key);
     if (key === 'space' || key === 'separator') {
-      if (!settings.hiddenItems.includes(key) && (key !== 'separator' || !isDashboardRoute())) records.push({ key, source: null });
+      if (!settings.hiddenItems.includes(key)) records.push({ key, source: null });
       return;
     }
 

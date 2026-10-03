@@ -36,8 +36,8 @@ function routeFor(anchor) {
   }
 }
 
-function appRoute() {
-  return (window.location.hash.slice(1) || window.location.pathname).split('?')[0].toLowerCase();
+export function appRoute() {
+  return (window.location.hash.slice(1) || window.location.pathname).split('?')[0].toLowerCase().replace(/^!/, '').replace(/\/+$/, '') || '/';
 }
 
 export function isDashboardRoute() {
@@ -182,7 +182,7 @@ function modernCandidates(header) {
   const seen = new Set();
   const toolbar = header?.querySelector('.MuiToolbar-root');
   const children = toolbar ? Array.from(toolbar.children) : [];
-  const nav = children.find((element) => element.matches('.MuiStack-root, .MuiTabs-root')) || null;
+  const nav = children.find((element) => element.classList.contains('MuiStack-root')) || null;
   const enhancedActions = children.find((element) => element.classList.contains('headerRight')) || null;
   const boxes = children.filter((element) => element.classList.contains('MuiBox-root'));
   const profile = boxes.find((box) => Boolean(box.querySelector('[aria-controls="app-user-menu"]'))) || null;
@@ -192,7 +192,7 @@ function modernCandidates(header) {
     .filter((element) => element.matches('button, a[href]') && !element.querySelector('svg[data-testid="MenuIcon"]'))
     .forEach((source) => addCandidate(result, seen, source, 'toolbar'));
   addCandidates(result, seen, nav, 'a[href], button', 'navigation');
-  if (!isDashboardRoute()) document.querySelectorAll('.MuiDrawer-paper, #user-view-overflow-menu, .customMenuOptions').forEach((container) => addCandidates(result, seen, container, 'a[href]', 'fallback'));
+  document.querySelectorAll('.MuiDrawer-paper, #user-view-overflow-menu, .customMenuOptions').forEach((container) => addCandidates(result, seen, container, 'a[href]', 'fallback'));
   addCandidates(result, seen, actions, 'button, a[href]', 'actions');
   addCandidates(result, seen, enhancedActions, 'button, a[href]', 'actions');
   addCandidates(result, seen, profile, 'button, a[href]', 'profile');

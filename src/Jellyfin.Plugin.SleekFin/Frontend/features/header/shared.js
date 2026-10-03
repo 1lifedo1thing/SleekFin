@@ -11,25 +11,10 @@ export function layoutMode() {
 }
 
 function findVisibleHeader(selector, childSelector) {
-  return Array.from(document.querySelectorAll(selector)).find((header) => dom.isVisible(header) && Boolean(header.querySelector(childSelector))) || null;
-}
-
-function findPlayerSurface() {
-  const route = (window.location.hash.slice(1) || window.location.pathname).split('?')[0].toLowerCase();
-  if (route !== '/video') return null;
-
-  const headers = Array.from(document.querySelectorAll('.skinHeader.osdHeader')).filter((header) => dom.isVisible(header.parentElement));
-  const modern = headers.find((header) => header.querySelector('.MuiToolbar-root'));
-  if (modern) return { header: modern, kind: 'modern' };
-
-  const legacy = headers.find((header) => header.querySelector('.headerTop'));
-  return legacy ? { header: legacy, kind: 'legacy' } : null;
+  return Array.from(document.querySelectorAll(selector)).find((header) => !header.classList.contains('osdHeader') && dom.isVisible(header) && Boolean(header.querySelector(childSelector))) || null;
 }
 
 export function findSurface() {
-  const player = findPlayerSurface();
-  if (player) return player;
-
   const modern = findVisibleHeader('header.MuiAppBar-root', '.MuiToolbar-root');
   if (modern) return { header: modern, kind: 'modern' };
 

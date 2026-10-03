@@ -15,7 +15,6 @@ export function createLegacyAdapter(brand) {
       actions: right,
       cluster,
       header,
-      isOsd: header.classList.contains('osdHeader'),
       isTv: isTvLayout(),
       kind: 'legacy',
       layoutMode: layoutMode(),
@@ -38,7 +37,7 @@ export function createLegacyAdapter(brand) {
       move(headerMount, tabs, cluster);
     }
     move(headerMount, right, cluster);
-    brand.ensureFallback(headerMount.isOsd || headerMount.isTv ? header : document.body);
+    brand.ensureFallback(headerMount.isTv ? header : document.body);
     const proxyBefore = tabs?.parentNode === cluster ? tabs : right?.parentNode === cluster ? right : null;
     headerMount.proxy = createHeaderProxy(headerMount, cluster, proxyBefore, settings);
     headerMount.updateBrandOverlap = () => brand.updateOverlap(headerMount);
@@ -48,7 +47,6 @@ export function createLegacyAdapter(brand) {
   function needsReplacement(mount, surface, settings) {
     return (
       mount.header !== surface.header ||
-      mount.isOsd !== surface.header.classList.contains('osdHeader') ||
       mount.isTv !== isTvLayout() ||
       mount.layoutMode !== layoutMode() ||
       !dom.isConnected(mount.cluster) ||

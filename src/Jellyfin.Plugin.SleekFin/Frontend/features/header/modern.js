@@ -18,7 +18,7 @@ function updateActiveControls(mount) {
 function findParts(toolbar) {
   const children = directChildren(toolbar);
   const menu = children.find((element) => element.matches('button') && Boolean(element.querySelector('svg[data-testid="MenuIcon"]'))) || null;
-  const nav = children.find((element) => element.matches('.MuiStack-root, .MuiTabs-root')) || null;
+  const nav = children.find((element) => element.classList.contains('MuiStack-root')) || null;
   const brand =
     nav &&
     Array.from(nav.querySelectorAll('a[href]')).find((link) => {

@@ -1,6 +1,6 @@
 import { dom } from '../../shared/runtime.js';
 import { createBrandController } from './FallbackBrand.jsx';
-import { catalogDescriptors, catalogSignature, chromeSignature, cloneCatalogTemplate, cloneChromeTemplate, discoverHeaderChrome, discoverHeaderControls, isDashboardRoute } from './inventory.js';
+import { appRoute, catalogDescriptors, catalogSignature, chromeSignature, cloneCatalogTemplate, cloneChromeTemplate, discoverHeaderChrome, discoverHeaderControls, isDashboardRoute } from './inventory.js';
 import { createLegacyAdapter } from './legacy.js';
 import { createModernAdapter } from './modern.js';
 import { DEFAULT_SETTINGS, normalizeSettings, settingsSignature } from './settings.js';
@@ -36,6 +36,10 @@ function currentScope() {
   } catch {
     return { key: '', serverId: '', userId: '' };
   }
+}
+
+function isExcludedRoute() {
+  return isDashboardRoute() || appRoute() === '/video';
 }
 
 function cachedHeaderSources(scope = currentScope()) {
@@ -101,8 +105,6 @@ function createHeaderFeature() {
     chromeSignature: chromeSignature(cached.chrome),
     loadingTimer: 0,
     mount: null,
-    playerHeader: null,
-    playerObserver: null,
     publicSettings: PUBLIC_SETTINGS,
     reconcileTimer: 0,
     settings: PUBLIC_SETTINGS,
@@ -205,7 +207,7 @@ function createHeaderFeature() {
   }
 
   function captureHeaderSources(surface) {
-    if (!surface || surface.header.classList.contains('osdHeader') || isDashboardRoute() || !currentScope().userId) return;
+    if (!surface || !currentScope().userId) return;
 
     const records = discoverHeaderControls(surface);
     const signature = catalogSignature(records);
@@ -261,22 +263,15 @@ function createHeaderFeature() {
     document.documentElement.classList.remove(ROOT_CLASS);
   }
 
-  function watchPlayerHeader(header) {
-    if (state.playerHeader === header) return;
-    state.playerObserver?.disconnect();
-    state.playerHeader = header;
-    state.playerObserver = null;
-    if (header) {
-      state.playerObserver = new MutationObserver(scheduleReconcile);
-      state.playerObserver.observe(header, { attributes: true, attributeFilter: ['class', 'style'] });
-    }
-  }
-
   function reconcile() {
     if (!state.started) return;
     if (syncServerScope()) requestSettings();
+    if (isExcludedRoute()) {
+      unmount();
+      finishLoading();
+      return;
+    }
     const surface = findSurface();
-    watchPlayerHeader(state.settings.enabled && surface?.header.classList.contains('osdHeader') ? surface.header : null);
     captureHeaderSources(surface);
     if (!state.settings.enabled) {
       unmount();
@@ -287,14 +282,6 @@ function createHeaderFeature() {
     if (!surface) {
       unmount();
       prepareLoading();
-      return;
-    }
-
-    // Keep the OSD mount while Jellyfin fades it out
-    if (surface.header.classList.contains('osdHeader') && !dom.isVisible(surface.header)) {
-      state.mount?.overflow?.close();
-      if (state.mount?.header !== surface.header) unmount();
-      finishLoading();
       return;
     }
 
@@ -378,7 +365,10 @@ function createHeaderFeature() {
   function watchHeader(event) {
     const scopeChanged = syncServerScope();
     clearStaleDashboardMenu();
-    if (event?.type !== 'scroll') captureHeaderSources(findSurface());
+    if (isExcludedRoute()) {
+      unmount();
+      finishLoading();
+    } else if (event?.type !== 'scroll') captureHeaderSources(findSurface());
     scheduleReconcile();
     if (scopeChanged || (!state.settingsResolved && (event?.type === 'pageshow' || event?.type === 'viewshow'))) requestSettings();
   }
@@ -409,7 +399,6 @@ function createHeaderFeature() {
     window.removeEventListener(SETTINGS_CHANGED_EVENT, requestSettings);
     state.stopWatching?.();
     state.stopWatching = null;
-    watchPlayerHeader(null);
     unmount();
     finishLoading();
   }

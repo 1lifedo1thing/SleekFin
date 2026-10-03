@@ -29,7 +29,7 @@ export function HeaderOverflowDrawer({ anchor, onActivate, onClose, records }) {
 
   const bar = anchor.closest('[data-sleekfin-header-proxy]') || anchor;
   const barBounds = bar.getBoundingClientRect();
-  const compact = layoutMode() === 'compact' && !anchor.closest('.osdHeader');
+  const compact = layoutMode() === 'compact';
   const style = compact
     ? { bottom: `${window.innerHeight - barBounds.top + 8}px`, left: `${barBounds.left}px`, width: `${barBounds.width}px` }
     : { left: `${barBounds.left}px`, top: `${barBounds.bottom + 8}px`, width: `${barBounds.width}px` };
