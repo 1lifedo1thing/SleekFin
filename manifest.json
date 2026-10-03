@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.2.4",
+        "changelog": "Corrected the Resume label on item detail pages for items with no playback position. Changes by @T9es",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.2.4/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "EBFF2587A5C5FBDF22A93EBBFD146C79",
+        "timestamp": "2026-10-03T21:38:37.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.2.3",
         "changelog": "Restored scroll position when navigating to previous pages per history entry (going back/forwards)",
         "targetAbi": "12.0.0.0",
