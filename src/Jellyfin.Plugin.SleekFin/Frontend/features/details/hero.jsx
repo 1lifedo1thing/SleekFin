@@ -54,7 +54,7 @@ export function createHero(page) {
 
   let moved = [];
   const backdropOriginal = nativeBackdrop.style.backgroundImage;
-  const hero = dom.element('<div class="sleekfin-details-hero"><div></div><div class="sleekfin-details-stack"><div class="sleekfin-details-title"></div><div class="sleekfin-details-child-title" hidden></div><div class="sleekfin-details-facts"></div><div class="sleekfin-details-genres"></div></div></div>');
+  const hero = dom.element('<div class="sleekfin-details-hero"><div class="sleekfin-details-back-root"></div><div class="sleekfin-details-stack"><div class="sleekfin-details-title"></div><div class="sleekfin-details-child-title" hidden></div><div class="sleekfin-details-facts"></div><div class="sleekfin-details-genres"></div></div></div>');
   const backRoot = hero.firstElementChild;
   const stack = hero.querySelector('.sleekfin-details-stack');
   const title = stack.querySelector('.sleekfin-details-title');
@@ -63,6 +63,7 @@ export function createHero(page) {
   const genresRoot = stack.querySelector('.sleekfin-details-genres');
   const downloadWasHidden = actions.querySelector('.btnDownload')?.classList.contains('hide');
   const logo = page.querySelector('.detailLogo');
+  const overview = page.querySelector('.overview');
 
   function move(element, destination) {
     if (!element) return;
@@ -98,6 +99,12 @@ export function createHero(page) {
   }
 
   function sync() {
+    if (overview) overview.title = overview.classList.contains('detail-clamp-text') ? 'Click to expand' : 'Click to collapse';
+    const header = document.documentElement.classList.contains('sleekfin-header-mounted') ? Array.from(document.querySelectorAll('[data-sleekfin-header]')).find(dom.isVisible) : null;
+    const menu = header?.querySelector('.mainDrawerButton, svg[data-testid="MenuIcon"]')?.closest('button');
+    backRoot.classList.toggle('sleekfin-details-back-after-menu', dom.isVisible(menu));
+    const backParent = header || hero;
+    if (backRoot.parentNode !== backParent) backParent.appendChild(backRoot);
     const source = Array.from(page.querySelectorAll('.backdropImage')).find((element) => window.getComputedStyle(element).backgroundImage !== 'none');
     const background = source && window.getComputedStyle(source).backgroundImage;
     if (background && background !== 'none') {
@@ -107,9 +114,10 @@ export function createHero(page) {
   }
 
   render(<IconButton class="sleekfin-details-back" icon="arrowLeft" label="Back" raised onClick={goBack} />, backRoot);
+  stack.addEventListener('click', (event) => { if (overview?.contains(event.target)) page.querySelector('.overview-expand')?.click(); });
   move(logo, title);
   move(page.querySelector('.nameContainer'), title);
-  move(page.querySelector('.overview'), stack);
+  move(overview, stack);
   move(page.querySelector('.overview-controls'), stack);
   move(actions, stack);
   page.insertBefore(hero, wrapper);
@@ -118,8 +126,10 @@ export function createHero(page) {
   return {
     actions,
     destroy() {
+      overview?.removeAttribute('title');
       actions.querySelector('.btnDownload')?.classList.toggle('hide', downloadWasHidden);
       render(null, backRoot);
+      backRoot.remove();
       render(null, childTitleRoot);
       render(null, factsRoot);
       render(null, genresRoot);

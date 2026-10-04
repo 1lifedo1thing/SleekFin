@@ -4,6 +4,7 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
     background-size: cover !important;
     height: var(--sleekfin-details-hero-height) !important;
     inset: 0 0 auto !important;
+    margin: 0 !important;
     opacity: 1 !important;
     position: absolute !important;
     width: 100% !important;
@@ -37,7 +38,7 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
     z-index: 2;
 }
 
-.sleekfin-details-hero > :first-child {
+.sleekfin-details-back-root {
     inset: 0;
     pointer-events: none;
     position: absolute;
@@ -52,6 +53,42 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
     position: absolute;
     top: 24px;
     width: 40px;
+}
+
+html.sleekfin-details-mounted.sleekfin-header-mounted {
+    --sleekfin-details-back-size: calc(var(--sleekfin-header-item-height) + var(--sleekfin-header-bar-padding) + var(--sleekfin-header-bar-padding));
+}
+
+html.sleekfin-details-concealed [data-sleekfin-header] > .sleekfin-details-back-root {
+    visibility: hidden;
+}
+
+html.sleekfin-details-mounted [data-sleekfin-header] > .sleekfin-details-back-root {
+    z-index: 4;
+}
+
+html.sleekfin-details-mounted [data-sleekfin-header] .sleekfin-details-back {
+    height: var(--sleekfin-details-back-size);
+    top: var(--sleekfin-header-bar-top);
+    width: var(--sleekfin-details-back-size);
+}
+
+html.sleekfin-details-mounted [data-sleekfin-header] .sleekfin-details-back-after-menu .sleekfin-details-back {
+    left: calc(var(--sleekfin-page-gutter) + 56px);
+}
+
+html.sleekfin-details-mounted.sleekfin-header-mounted[data-sleekfin-header-bar-position="left"] :is([data-sleekfin-header-first-cluster], [data-sleekfin-legacy-cluster]) {
+    margin-inline-start: calc(var(--sleekfin-details-back-size) + var(--sleekfin-header-brand-gap)) !important;
+}
+
+html.sleekfin-details-mounted.sleekfin-header-mounted[data-sleekfin-header-brand-position] :is([data-sleekfin-header-brand], .sleekfin-header-fallback-brand) {
+    left: calc(var(--sleekfin-page-gutter) + var(--sleekfin-details-back-size) + var(--sleekfin-header-brand-gap) + var(--sleekfin-details-brand-menu-offset, 0px)) !important;
+    right: auto !important;
+    transform: none;
+}
+
+html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu-offset="true"] {
+    --sleekfin-details-brand-menu-offset: 56px;
 }
 
 .sleekfin-details-back svg {
@@ -176,13 +213,21 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
 
 .sleekfin-details-stack > .overview {
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
     color: rgba(255, 255, 255, 0.88) !important;
+    cursor: pointer;
     display: -webkit-box;
     font: 400 14px/1.45 var(--sleekfin-font-family);
     margin: 12px 0 0 !important;
     max-width: 520px;
     overflow: hidden;
+}
+
+.sleekfin-details-stack > .overview.detail-clamp-text {
+    -webkit-line-clamp: 3;
+}
+
+.sleekfin-details-stack > .overview-controls {
+    display: none;
 }
 
 @media (min-width: 768px) {

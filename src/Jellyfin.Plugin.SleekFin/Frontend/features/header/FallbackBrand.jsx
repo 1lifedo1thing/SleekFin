@@ -104,7 +104,7 @@ export function createBrandController(isActive) {
     if (!element) return;
 
     mark(mount, element, 'data-sleekfin-header-overlap-hidden', 'false');
-    if (!mount.proxy || (window.innerWidth >= 1100 && mount.proxy.getAttribute('data-sleekfin-header-overflow-active') !== 'true')) return;
+    if (!mount.proxy || (window.innerWidth >= 1100 && mount.proxy.getAttribute('data-sleekfin-header-overflow-active') !== 'true' && !document.documentElement.classList.contains('sleekfin-details-mounted'))) return;
 
     const brandBounds = element.getBoundingClientRect();
     const barBounds = mount.proxy.getBoundingClientRect();

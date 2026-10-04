@@ -74,6 +74,11 @@ html.sleekfin-details-mounted body {
     overflow: hidden !important;
 }
 
+/* Jellyfin Modern reserves the fixed header height even when the details artwork fills the page. */
+html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header="modern"] + div[aria-hidden="true"] {
+    height: 0 !important;
+}
+
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] {
     background: var(--sleekfin-background) !important;
     box-sizing: border-box;
