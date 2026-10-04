@@ -1,14 +1,14 @@
 {
   "category": "General",
-  "changelog": "Restored dropdowns for version, video, audio and subtitles in a compact media settings modal. Synchronised selections with Jellyfin playback and refreshed details safely when switching versions. Added a “Use custom SleekFin dropdown” option in configuration to show custom season and media setting dropdowns (default is to use native dropdown). Also removed duplicate Play/Resume buttons, reordered actions to Play/Resume, Download and Add to watchlist with a ⋮ settings button for media settings modal. Also simplified duplicated picker code and lifecycle cleanup. Changes by @T9es and @varunaditya-plus",
+  "changelog": "Moved back button on detail pages into header, removed black area under header, and raised detail content appropriately. Also removed show more/less row in hero sections and replaced it with the text being able to be collapsed/uncollapsed on click",
   "description": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "guid": "da36c4ef-1d10-4169-8a68-26b194d5301a",
   "name": "SleekFin",
   "overview": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "owner": "varunaditya-plus",
   "targetAbi": "12.0.0.0",
-  "timestamp": "2026-10-04T20:36:08.0000000Z",
-  "version": "1.4.3.0",
+  "timestamp": "2026-10-04T22:58:04.0000000Z",
+  "version": "1.4.3.1",
   "status": "Active",
   "autoUpdate": true,
   "assemblies": [

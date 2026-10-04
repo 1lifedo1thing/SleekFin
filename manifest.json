@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.3.1",
+        "changelog": "Moved back button on detail pages into header, removed black area under header, and raised detail content appropriately. Also removed show more/less row in hero sections and replaced it with the text being able to be collapsed/uncollapsed on click",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.3.1/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "805F55C5B845D5AA4898FA9CF4AA1FD1",
+        "timestamp": "2026-10-04T22:58:04.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.3.0",
         "changelog": "Restored dropdowns for version, video, audio and subtitles in a compact media settings modal. Synchronised selections with Jellyfin playback and refreshed details safely when switching versions. Added a “Use custom SleekFin dropdown” option in configuration to show custom season and media setting dropdowns (default is to use native dropdown). Also removed duplicate Play/Resume buttons, reordered actions to Play/Resume, Download and Add to watchlist with a ⋮ settings button for media settings modal. Also simplified duplicated picker code and lifecycle cleanup. Changes by @T9es and @varunaditya-plus",
         "targetAbi": "12.0.0.0",
