@@ -1607,12 +1607,12 @@
                             </div>
                             <div class="sleekfin-toggle-row">
                                 <div class="sleekfin-toggle-copy">
-                                    <label class="sleekfin-toggle-label" for="sleekFinDetailsSeasonPickerEnabled">Use SleekFin season picker</label>
-                                    <div class="sleekfin-field-description">Replaces the native season dropdown on series pages with a SleekFin-styled picker. Off by default, because native inputs behave more reliably on older devices.</div>
+                                    <label class="sleekfin-toggle-label" for="sleekFinDetailsCustomDropdownEnabled">Use custom SleekFin dropdown</label>
+                                    <div class="sleekfin-field-description">Uses SleekFin dropdowns for the season picker and media settings. Turn off to use native dropdowns. Off by default, because native inputs behave more reliably on older devices.</div>
                                 </div>
                                 <div class="sleekfin-toggle-actions">
                                     <label class="sleekfin-toggle">
-                                        <input id="sleekFinDetailsSeasonPickerEnabled" type="checkbox" />
+                                        <input id="sleekFinDetailsCustomDropdownEnabled" type="checkbox" />
                                         <span class="sleekfin-toggle-slider"></span>
                                     </label>
                                 </div>
@@ -2132,7 +2132,7 @@
             var enabledInput = document.getElementById('sleekFinEnabled');
             var heroEnabledInput = document.getElementById('sleekFinHeroEnabled');
             var detailsEnabledInput = document.getElementById('sleekFinDetailsEnabled');
-            var detailsSeasonPickerInput = document.getElementById('sleekFinDetailsSeasonPickerEnabled');
+            var detailsDropdownInput = document.getElementById('sleekFinDetailsCustomDropdownEnabled');
             var randomizedInput = document.getElementById('sleekFinHeroRandomized');
             var sources = document.getElementById('sleekFinHeroSources');
             var dependencyStatus = document.getElementById('sleekFinDependencyStatus');
@@ -3706,7 +3706,7 @@
                         enabledInput.checked = readValue(configuration, 'HeaderEnabled') !== false;
                         heroEnabledInput.checked = readValue(configuration, 'HeroEnabled') !== false;
                         detailsEnabledInput.checked = readValue(configuration, 'DetailsEnabled') !== false;
-                        detailsSeasonPickerInput.checked = readValue(configuration, 'DetailsSeasonPickerEnabled') === true;
+                        detailsDropdownInput.checked = readValue(configuration, 'DetailsSeasonPickerEnabled') === true;
                         applyHeroConfiguration(configuration);
                         applyBuilderConfiguration(configuration);
                         loadPreviewServerName(request);
@@ -3777,7 +3777,7 @@
                         configuration.HeaderEnabled = enabledInput.checked;
                         configuration.HeroEnabled = heroEnabledInput.checked;
                         configuration.DetailsEnabled = detailsEnabledInput.checked;
-                        configuration.DetailsSeasonPickerEnabled = detailsSeasonPickerInput.checked;
+                        configuration.DetailsSeasonPickerEnabled = detailsDropdownInput.checked;
                         saveHeroConfiguration(configuration, contentOrder);
                         saveBuilderConfiguration(configuration);
                         return ApiClient.updatePluginConfiguration(PLUGIN_ID, configuration);

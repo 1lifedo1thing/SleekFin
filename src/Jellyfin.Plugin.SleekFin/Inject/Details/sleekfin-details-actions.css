@@ -1,6 +1,7 @@
 .sleekfin-details-stack > .mainDetailButtons {
     align-items: center;
     display: flex !important;
+    flex-wrap: wrap;
     gap: 12px;
     margin: 18px 0 0 !important;
 }
@@ -9,24 +10,20 @@
     display: none !important;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnReplay, .btnDownload, .btnUserRating):not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnDownload, .btnUserRating):not(.hide) {
     display: inline-flex !important;
     margin: 0 !important;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnReplay).sleekfin-details-suppressed-action {
-    display: none !important;
-}
-
-.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnReplay):not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > .btnPlay:not(.hide) {
     order: 1;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > .btnUserRating:not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > .btnDownload:not(.hide) {
     order: 2;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > .btnDownload:not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > .btnUserRating:not(.hide) {
     order: 3;
 }
 
@@ -35,6 +32,24 @@
     height: auto;
 }
 
-.sleekfin-details-stack > .mainDetailButtons .material-icons {
+.sleekfin-details-stack > .mainDetailButtons .detailButton-content .material-icons {
     display: none !important;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-action-spacer:not([hidden]) {
+    display: block !important;
+    flex-grow: 1;
+    /* Cancel the spacer's extra gap so the settings button can stay on the same line. */
+    margin-left: -12px;
+    order: 4;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-track-settings:not([hidden]) {
+    border-radius: 50%;
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    height: 40px;
+    margin-left: auto;
+    order: 5;
+    width: 40px;
 }

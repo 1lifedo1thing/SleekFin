@@ -98,19 +98,25 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details]::-webkit-sc
     border-radius: 6px;
 }
 
+/* The hero consumes its own height in page flow, so lower sections start below it without a spacer. */
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > .detailPageWrapperContainer {
     background: transparent !important;
     box-sizing: border-box;
     margin: 0;
     max-width: none;
-    padding-top: var(--sleekfin-details-hero-height);
+    padding-top: 0;
     position: relative;
-    width: calc(100vw - 5px);
+    width: 100%;
     z-index: 1;
 }
 
+/* Native controls stay in this block so Jellyfin's playback handlers can still query them. */
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPagePrimaryContainer {
     display: none !important;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPageSecondaryContainer {
+    padding-top: 0;
 }
 
 html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) .cardScalable {

@@ -30,12 +30,17 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
     align-items: flex-end;
     box-sizing: border-box;
     display: flex;
-    height: var(--sleekfin-details-hero-height);
-    inset: 0 0 auto;
+    min-height: var(--sleekfin-details-hero-height);
     padding: 0 var(--sleekfin-page-gutter) 72px;
     pointer-events: none;
-    position: absolute;
+    position: relative;
     z-index: 2;
+}
+
+.sleekfin-details-hero > :first-child {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
 }
 
 .sleekfin-details-back {
@@ -55,9 +60,9 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > #itemBack
 }
 
 .sleekfin-details-stack {
-    max-width: 560px;
     min-width: 0;
     pointer-events: auto;
+    width: 100%;
 }
 
 .sleekfin-details-title {
