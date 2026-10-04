@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.2.5",
+        "changelog": "Simplified per-history-entry scroll restoration and reused Jellyfin’s native Play/Resume updates while keeping episode action suppression",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.2.5/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "0759BF25FAB8BCD70D2D124F080937A0",
+        "timestamp": "2026-10-04T09:50:23.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.2.4",
         "changelog": "Corrected the Resume label on item detail pages for items with no playback position. Changes by @T9es",
         "targetAbi": "12.0.0.0",

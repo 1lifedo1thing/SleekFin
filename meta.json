@@ -1,14 +1,14 @@
 {
   "category": "General",
-  "changelog": "Corrected the Resume label on item detail pages for items with no playback position. Changes by @T9es",
+  "changelog": "Simplified per-history-entry scroll restoration and reused Jellyfin’s native Play/Resume updates while keeping episode action suppression",
   "description": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "guid": "da36c4ef-1d10-4169-8a68-26b194d5301a",
   "name": "SleekFin",
   "overview": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "owner": "varunaditya-plus",
   "targetAbi": "12.0.0.0",
-  "timestamp": "2026-10-03T21:38:37.0000000Z",
-  "version": "1.4.2.4",
+  "timestamp": "2026-10-04T09:50:23.0000000Z",
+  "version": "1.4.2.5",
   "status": "Active",
   "autoUpdate": true,
   "assemblies": [
