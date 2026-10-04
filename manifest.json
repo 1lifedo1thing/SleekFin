@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.3.0",
+        "changelog": "Restored dropdowns for version, video, audio and subtitles in a compact media settings modal. Synchronised selections with Jellyfin playback and refreshed details safely when switching versions. Added a “Use custom SleekFin dropdown” option in configuration to show custom season and media setting dropdowns (default is to use native dropdown). Also removed duplicate Play/Resume buttons, reordered actions to Play/Resume, Download and Add to watchlist with a ⋮ settings button for media settings modal. Also simplified duplicated picker code and lifecycle cleanup. Changes by @T9es and @varunaditya-plus",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.3.0/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "87699C069EEF5AB54D1D201A2938B2EB",
+        "timestamp": "2026-10-04T20:36:08.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.2.5",
         "changelog": "Simplified per-history-entry scroll restoration and reused Jellyfin’s native Play/Resume updates while keeping episode action suppression",
         "targetAbi": "12.0.0.0",
