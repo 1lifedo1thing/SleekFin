@@ -199,6 +199,16 @@
             margin-bottom: 0;
         }
 
+        .sleekfin-color-swatch {
+            height: 26px;
+        }
+
+        .sleekfin-color-swatch input[type="color"] {
+            height: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
         .sleekfin-toggle-copy {
             flex: 1;
             min-width: 0;
@@ -1554,7 +1564,7 @@
                     </div>
 
                     <div class="sleekfin-section-container">
-                        <div class="sleekfin-config-section-title">Header</div>
+                        <div class="sleekfin-config-section-title">General options</div>
                         <div class="sleekfin-card">
                             <div class="sleekfin-toggle-row">
                                 <div class="sleekfin-toggle-copy">
@@ -1568,12 +1578,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="sleekfin-section-container">
-                        <div class="sleekfin-config-section-title">Hero</div>
-                        <div class="sleekfin-card">
                             <div class="sleekfin-toggle-row">
                                 <div class="sleekfin-toggle-copy">
                                     <label class="sleekfin-toggle-label" for="sleekFinHeroEnabled">Enable hero</label>
@@ -1586,13 +1590,6 @@
                                     </label>
                                 </div>
                             </div>
-
-                        </div>
-                    </div>
-
-                    <div class="sleekfin-section-container">
-                        <div class="sleekfin-config-section-title">Details</div>
-                        <div class="sleekfin-card">
                             <div class="sleekfin-toggle-row">
                                 <div class="sleekfin-toggle-copy">
                                     <label class="sleekfin-toggle-label" for="sleekFinDetailsEnabled">Use SleekFin detail pages</label>
@@ -1616,6 +1613,12 @@
                                         <span class="sleekfin-toggle-slider"></span>
                                     </label>
                                 </div>
+                            </div>
+                            <div class="sleekfin-toggle-row">
+                                <label class="sleekfin-toggle-label" for="sleekFinAccentColor">SleekFin accent color</label>
+                                <label class="sleekfin-color-swatch">
+                                    <input id="sleekFinAccentColor" type="color" value="#dc2626" />
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -2133,6 +2136,7 @@
             var heroEnabledInput = document.getElementById('sleekFinHeroEnabled');
             var detailsEnabledInput = document.getElementById('sleekFinDetailsEnabled');
             var detailsDropdownInput = document.getElementById('sleekFinDetailsCustomDropdownEnabled');
+            var accentInput = document.getElementById('sleekFinAccentColor');
             var randomizedInput = document.getElementById('sleekFinHeroRandomized');
             var sources = document.getElementById('sleekFinHeroSources');
             var dependencyStatus = document.getElementById('sleekFinDependencyStatus');
@@ -2329,7 +2333,7 @@
 
             var missingHeroField = Object.keys(heroFields).some(function (name) { return !heroFields[name]; });
 
-            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
+            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !accentInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
                 return;
             }
 
@@ -3707,6 +3711,7 @@
                         heroEnabledInput.checked = readValue(configuration, 'HeroEnabled') !== false;
                         detailsEnabledInput.checked = readValue(configuration, 'DetailsEnabled') !== false;
                         detailsDropdownInput.checked = readValue(configuration, 'DetailsSeasonPickerEnabled') === true;
+                        accentInput.value = readValue(configuration, 'AccentColor') || accentInput.defaultValue;
                         applyHeroConfiguration(configuration);
                         applyBuilderConfiguration(configuration);
                         loadPreviewServerName(request);
@@ -3778,6 +3783,7 @@
                         configuration.HeroEnabled = heroEnabledInput.checked;
                         configuration.DetailsEnabled = detailsEnabledInput.checked;
                         configuration.DetailsSeasonPickerEnabled = detailsDropdownInput.checked;
+                        configuration.AccentColor = accentInput.value;
                         saveHeroConfiguration(configuration, contentOrder);
                         saveBuilderConfiguration(configuration);
                         return ApiClient.updatePluginConfiguration(PLUGIN_ID, configuration);

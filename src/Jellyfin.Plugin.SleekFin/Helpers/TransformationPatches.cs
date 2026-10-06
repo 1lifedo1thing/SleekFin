@@ -8,7 +8,7 @@ namespace Jellyfin.Plugin.SleekFin.Helpers;
 public static class TransformationPatches
 {
     private static readonly Regex InjectedStyles = new(
-        "<link\\b[^>]*\\bdata-sleekfin-(?:[a-z]+-)?asset=\"[^\"]*\"[^>]*>",
+        "<link\\b[^>]*\\bdata-sleekfin-(?:[a-z]+-)?asset=\"[^\"]*\"[^>]*>|<style\\b[^>]*\\bdata-sleekfin-asset=\"[^\"]*\"[^>]*>[\\s\\S]*?</style>",
         RegexOptions.CultureInvariant);
 
     // Also removes the earlier inline boot script if Jellyfin transforms content more than once.
@@ -49,6 +49,8 @@ public static class TransformationPatches
             string closingTag = asset.IsStyle || asset.IsBlockingScript ? "</head>" : "</body>";
             contents = contents.Replace(closingTag, $"{element}{closingTag}", StringComparison.Ordinal);
         }
+
+        contents = contents.Replace("</head>", $"<style data-sleekfin-asset=\"accent-color\">html.sleekfin-main-ui:root{{--sleekfin-accent:{configuration.AccentColor};}}</style></head>", StringComparison.Ordinal);
 
         if (configuration.HeaderEnabled || configuration.HeroEnabled)
         {

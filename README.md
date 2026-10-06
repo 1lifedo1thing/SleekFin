@@ -25,7 +25,7 @@ The ultimate customisation plugin for Jellyfin, which fully reskins Jellyfin to 
 
 ## Features
 
-- **Complete reskin:** Applies a fully black interface with dark surfaces, red accents, and uses Inter across the main UI, dialogs, lists, and cards.
+- **Complete reskin:** Applies a fully black interface with dark surfaces, red accents (configurable), and uses Inter across the main UI, dialogs, lists, and cards.
 - **Jellyfin Enhanced integration:** Reskins [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) panels and controls to match SleekFin when the plugin is installed.
 - **Floating header:** Turns Jellyfin's modern and legacy desktop/mobile headers into a custom compact navigation bar which can be customized in the plugin's UI Builder.
 - **Configurable home hero:** Adds a full-width hero section above rows on the home page to display your library's content more nicely.
@@ -50,7 +50,7 @@ https://raw.githubusercontent.com/varunaditya-plus/SleekFin/main/manifest.json
 4. Now you have to restart your Jellyfin instance. Go to **Dashboard** and click the **Restart** button. You're done!
 
 ### Configuration
-After installation, go to **Dashboard → SleekFin**. The **Overview** tab contains the plugin's main settings, letting you decide which features you want to enable or disable. Our **UI Builder** gives you live editors for the elements we reskin, letting you tweak them to your liking.
+After installation, go to **Dashboard → SleekFin**. The **Overview** tab groups feature toggles and the SleekFin accent colour picker under **General options**. Save and refresh Jellyfin to apply an accent colour change. Our **UI Builder** gives you live editors for the elements we reskin, letting you tweak them to your liking.
 
 ## Screenshots
 <table>

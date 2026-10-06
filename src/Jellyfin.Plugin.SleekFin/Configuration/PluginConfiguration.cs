@@ -4,6 +4,22 @@ namespace Jellyfin.Plugin.SleekFin.Configuration;
 
 public sealed class PluginConfiguration : BasePluginConfiguration
 {
+    public const string DefaultAccentColor = "#dc2626";
+
+    private string _accentColor = DefaultAccentColor;
+
+    public string AccentColor
+    {
+        get => _accentColor;
+        set
+        {
+            string color = value?.Trim() ?? string.Empty;
+            _accentColor = color.Length == 7 && color[0] == '#' && color.Skip(1).All(char.IsAsciiHexDigit)
+                ? color.ToLowerInvariant()
+                : DefaultAccentColor;
+        }
+    }
+
     public bool HeaderEnabled { get; set; } = true;
 
     public string HeaderItemOrder { get; set; } = string.Empty;
