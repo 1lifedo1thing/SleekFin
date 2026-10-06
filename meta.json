@@ -1,14 +1,14 @@
 {
   "category": "General",
-  "changelog": "Fixed detail row arrows and made all row clipping on detail pages the same",
+  "changelog": "Fixed heading text sizing for Seasons, Seerr row headings, and other headings",
   "description": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "guid": "da36c4ef-1d10-4169-8a68-26b194d5301a",
   "name": "SleekFin",
   "overview": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "owner": "varunaditya-plus",
   "targetAbi": "12.0.0.0",
-  "timestamp": "2026-10-06T03:39:38.0000000Z",
-  "version": "1.4.3.3",
+  "timestamp": "2026-10-06T04:12:10.0000000Z",
+  "version": "1.4.3.4",
   "status": "Active",
   "autoUpdate": true,
   "assemblies": [
