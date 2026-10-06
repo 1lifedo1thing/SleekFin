@@ -1,6 +1,6 @@
 {
   "category": "General",
-  "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskined Jellyfin dialogs, SeerrFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
+  "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskinned Jellyfin dialogs, SleekFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
   "description": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "guid": "da36c4ef-1d10-4169-8a68-26b194d5301a",
   "name": "SleekFin",

@@ -11,7 +11,7 @@
     "versions": [
       {
         "version": "1.5.0.0",
-        "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskined Jellyfin dialogs, SeerrFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
+        "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskinned Jellyfin dialogs, SleekFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
         "targetAbi": "12.0.0.0",
         "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.5.0.0/Jellyfin.Plugin.SleekFin_12.0.0.zip",
         "checksum": "602B7864318F16E0B6B9FF3A2159C188",
