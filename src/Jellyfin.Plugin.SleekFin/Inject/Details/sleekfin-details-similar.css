@@ -1,29 +1,15 @@
-html.sleekfin-details-mounted #similarCollapsible {
-    padding-right: var(--sleekfin-page-gutter);
-}
-
-html.sleekfin-details-mounted #similarCollapsible > [is="emby-scroller"] {
-    overflow: visible;
-    padding: 0 !important;
-}
-
-/*
- * Jellyfin renders these as portrait cards and loads the portrait Primary image, so the
- * grid fills with as many columns as the row width allows. A fixed column count made the
- * artwork read as oversized on wide screens.
- */
 html.sleekfin-details-mounted #similarCollapsible .similarContent {
-    display: grid;
-    gap: 24px 6px;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    padding: 0 !important;
-    transform: none !important;
+    display: flex;
+    padding: 0 0 5px !important;
     width: 100% !important;
 }
 
 html.sleekfin-details-mounted #similarCollapsible .card {
+    box-sizing: border-box;
+    flex: 0 0 182px;
     margin: 0 !important;
-    width: auto !important;
+    padding-inline-end: 12px;
+    width: 182px !important;
 }
 
 html.sleekfin-details-mounted #similarCollapsible .cardScalable {
@@ -78,10 +64,4 @@ html.sleekfin-details-mounted #similarCollapsible .cardText a {
 
 html.sleekfin-details-mounted #similarCollapsible .card:hover .cardText a {
     color: var(--sleekfin-accent);
-}
-
-@media (min-width: 2000px) {
-    html.sleekfin-details-mounted #similarCollapsible .similarContent {
-        gap: 32px 10px;
-    }
 }

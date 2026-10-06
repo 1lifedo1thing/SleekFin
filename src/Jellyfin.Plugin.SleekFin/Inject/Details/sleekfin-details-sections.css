@@ -1,6 +1,6 @@
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPageSecondaryContainer {
     box-sizing: border-box;
-    padding: 0 0 72px var(--sleekfin-page-gutter) !important;
+    padding: 0 var(--sleekfin-page-gutter) 72px !important;
 }
 
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPageSecondaryContainer > .detailVerticalSection:not(#castCollapsible):not(#similarCollapsible) {
@@ -23,27 +23,30 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] :is(#castCo
     margin-bottom: 20px;
 }
 
-html.sleekfin-details-mounted #castCollapsible > [is="emby-scroller"] {
-    overflow: hidden;
+html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) > [is="emby-scroller"] {
+    overflow-y: hidden;
     padding: 0 !important;
+}
+
+html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) > [is="emby-scroller"]:not(.scrollX) {
+    overflow-x: hidden;
+}
+
+html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) > .emby-scrollbuttons {
+    padding-right: 0 !important;
 }
 
 html.sleekfin-details-mounted #castCollapsible #castContent {
     display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 0 var(--sleekfin-page-gutter) 4px 0 !important;
-    scrollbar-width: none;
-    transform: none !important;
+    padding: 0 0 5px !important;
 }
 
-html.sleekfin-details-mounted #castCollapsible #castContent::-webkit-scrollbar {
-    display: none;
-}
-
+/* Jellyfin's arrows calculate positions from card width, so spacing must be inside each card. */
 html.sleekfin-details-mounted #castCollapsible .card {
-    flex: 0 0 148px;
-    width: 148px !important;
+    box-sizing: border-box;
+    flex: 0 0 164px;
+    padding-inline-end: 16px;
+    width: 164px !important;
 }
 
 html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) .cardBox {
@@ -84,7 +87,7 @@ html.sleekfin-details-mounted #castCollapsible .cardText a {
 
 @media (max-width: 767px) {
     html.sleekfin-details-mounted #castCollapsible .card {
-        flex-basis: 132px;
-        width: 132px !important;
+        flex-basis: 148px;
+        width: 148px !important;
     }
 }

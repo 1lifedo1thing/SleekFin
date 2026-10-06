@@ -65,7 +65,22 @@
 .sleekfin-details-episode-controls {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    justify-content: flex-end;
+    max-width: 100%;
+}
+
+.sleekfin-details-episode-scroll-buttons {
+    display: flex;
+}
+
+.sleekfin-details-episode-scroll-buttons .emby-scrollbuttons-button {
+    color: var(--sleekfin-text);
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    width: 36px;
 }
 
 .sleekfin-details-control,

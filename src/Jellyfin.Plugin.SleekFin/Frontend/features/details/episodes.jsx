@@ -60,6 +60,7 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
   const [sortDescending, setSortDescending] = useState(false);
   const [status, setStatus] = useState(firstSeason ? 'loading' : 'error');
   const [view, setView] = useState('grid');
+  const [rowScroll, setRowScroll] = useState({ overflow: false, previous: false, next: false });
   const requestGeneration = useRef(0);
   const searchInput = useRef(null);
   const seasonSelect = useRef(null);
@@ -160,9 +161,28 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
     if (window.CustomElements && typeof window.CustomElements.upgradeSubtree === 'function') {
       window.CustomElements.upgradeSubtree(list);
     }
+
+    function updateScroll() {
+      const limit = Math.max(0, list.scrollWidth - list.clientWidth);
+      const position = Math.abs(list.scrollLeft);
+      const next = { overflow: view === 'grid' && limit > 1, previous: position > 1, next: position < limit - 1 };
+      setRowScroll((current) => current.overflow === next.overflow && current.previous === next.previous && current.next === next.next ? current : next);
+    }
+
+    updateScroll();
+    list.addEventListener('scroll', updateScroll, { passive: true });
+    const resizeObserver = typeof window.ResizeObserver === 'function' ? new window.ResizeObserver(updateScroll) : null;
+    resizeObserver?.observe(list);
+    if (!resizeObserver) window.addEventListener('resize', updateScroll);
+    return () => {
+      list.removeEventListener('scroll', updateScroll);
+      resizeObserver?.disconnect();
+      if (!resizeObserver) window.removeEventListener('resize', updateScroll);
+    };
   }, [client, list, view, visibleEpisodes]);
 
   const subtitle = status === 'loading' ? 'Loading episodes' : status === 'error' ? 'Episodes unavailable' : `${visibleEpisodes.length}${visibleEpisodes.length === 1 ? ' episode' : ' episodes'}`;
+  const scrollButtonClass = `emby-scrollbuttons-button paper-icon-button-light${document.documentElement.classList.contains('layout-tv') || document.body?.classList.contains('layout-tv') ? ' show-focus' : ''}`;
 
   let title;
   if (mediaItem.Type === 'Series') {
@@ -197,6 +217,19 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
     });
   }
 
+  function scrollEpisodes(direction) {
+    const first = list.firstElementChild;
+    if (!first || view !== 'grid') return;
+    const stride = first.nextElementSibling ? Math.abs(first.nextElementSibling.offsetLeft - first.offsetLeft) : first.offsetWidth;
+    if (!stride) return;
+    const step = Math.max(1, Math.floor(list.clientWidth / stride));
+    const index = Math.round(Math.abs(list.scrollLeft) / stride) + direction * step;
+    const position = Math.min(Math.max(0, index * stride), list.scrollWidth - list.clientWidth);
+    const left = window.getComputedStyle(list).direction === 'rtl' ? -position : position;
+    if (typeof list.scrollTo === 'function') list.scrollTo({ left, behavior: 'smooth' });
+    else list.scrollLeft = left;
+  }
+
   return (
     <Fragment>
       <SectionHeading title={title} subtitle={subtitle} />
@@ -210,6 +243,16 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
           <IconButton class="sleekfin-details-control" icon="grid" label="Grid view" data-view="grid" data-active={view === 'grid' ? 'true' : 'false'} onClick={() => setView('grid')} />
           <IconButton class="sleekfin-details-control" icon="list" label="List view" data-view="list" data-active={view === 'list' ? 'true' : 'false'} onClick={() => setView('list')} />
         </span>
+        {view === 'grid' && rowScroll.overflow && (
+          <span class="sleekfin-details-episode-scroll-buttons">
+            <button type="button" class={scrollButtonClass} title="Previous episodes" disabled={!rowScroll.previous} onClick={() => scrollEpisodes(-1)}>
+              <span class="material-icons chevron_left" aria-hidden="true" />
+            </button>
+            <button type="button" class={scrollButtonClass} title="Next episodes" disabled={!rowScroll.next} onClick={() => scrollEpisodes(1)}>
+              <span class="material-icons chevron_right" aria-hidden="true" />
+            </button>
+          </span>
+        )}
       </div>
     </Fragment>
   );
