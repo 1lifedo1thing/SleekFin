@@ -1,12 +1,5 @@
-/*
- * Do not add .backgroundContainer to this rule. Jellyfin paints it fixed over the whole
- * viewport and, during video playback, relies on its own
- * ".backgroundContainer-transparent:not(.withBackdrop)" rule to make that layer see-through.
- * This selector is (0,2,1) against Jellyfin's (0,2,0), so an !important background here wins
- * and the layer covers the player in opaque black while audio keeps playing.
- */
-html.sleekfin-main-ui,
-html.sleekfin-main-ui body,
+html.sleekfin-main-ui:not(.transparentDocument),
+html.sleekfin-main-ui:not(.transparentDocument) body,
 html.sleekfin-main-ui .nowPlayingPlaylist,
 html.sleekfin-main-ui .wizardStartForm,
 html.sleekfin-main-ui .dialog {
