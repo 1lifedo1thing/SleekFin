@@ -221,22 +221,39 @@
     bottom: 0;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     left: 0;
     padding: 18px;
     position: absolute;
     right: 0;
+    top: 0;
+}
+
+.sleekfin-details-episode-heading {
+    align-items: center;
+    display: flex;
+    gap: 8px;
 }
 
 .sleekfin-details-episode-number {
-    color: rgba(241, 242, 244, 0.68);
-    font: 600 10px/14px var(--sleekfin-font-family);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    align-items: center;
+    border-radius: 12px;
+    color: var(--sleekfin-muted);
+    display: inline-flex;
+    font: 400 14px/20px var(--sleekfin-font-family);
+    padding: 5px 10px;
+    white-space: nowrap;
+}
+
+.sleekfin-details-episode-list[data-view="grid"] .sleekfin-details-episode-number {
+    left: 10px;
+    position: absolute;
+    top: 10px;
 }
 
 .sleekfin-details-episode-title {
     font: 600 17px/22px var(--sleekfin-font-family);
-    margin-top: 2px;
+    min-width: 0;
 }
 
 .sleekfin-details-episode-overview {
@@ -312,6 +329,16 @@
     left: 268px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode:has(> .sleekfin-details-episode-download) .sleekfin-details-episode-heading {
+    padding-inline-end: 32px;
+}
+
+.sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (max-width: 767px) {

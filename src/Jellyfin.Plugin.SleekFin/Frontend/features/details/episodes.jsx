@@ -23,8 +23,10 @@ function EpisodeCard({ client, episode }) {
         {imageUrl && <img src={imageUrl} />}
         <span class="sleekfin-details-episode-shade" />
         <span class="sleekfin-details-episode-copy">
-          <span class="sleekfin-details-episode-number">{`Episode ${episode.IndexNumber || ''}`}</span>
-          <span class="sleekfin-details-episode-title">{episode.Name || ''}</span>
+          <span class="sleekfin-details-episode-heading">
+            {episode.IndexNumber != null && <span class="sleekfin-details-episode-number sleekfin-control-3d">{`E${episode.IndexNumber}`}</span>}
+            <span class="sleekfin-details-episode-title">{episode.Name || ''}</span>
+          </span>
           <span class="sleekfin-details-episode-overview">{episode.Overview || ''}</span>
           <span class="sleekfin-details-episode-footer">
             <span>
