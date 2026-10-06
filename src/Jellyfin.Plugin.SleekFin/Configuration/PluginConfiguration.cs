@@ -5,8 +5,10 @@ namespace Jellyfin.Plugin.SleekFin.Configuration;
 public sealed class PluginConfiguration : BasePluginConfiguration
 {
     public const string DefaultAccentColor = "#dc2626";
+    public const string DefaultDropdownStyle = "Jellyfin";
 
     private string _accentColor = DefaultAccentColor;
+    private string? _dropdownStyle;
 
     public string AccentColor
     {
@@ -127,6 +129,19 @@ public sealed class PluginConfiguration : BasePluginConfiguration
     public bool DetailsEnabled { get; set; } = true;
 
     public bool DetailsSeasonPickerEnabled { get; set; } = false;
+
+    public string DropdownStyle
+    {
+        get => _dropdownStyle ?? (DetailsSeasonPickerEnabled ? "SeerrFin" : DefaultDropdownStyle);
+        set => _dropdownStyle = value?.Trim().ToLowerInvariant() switch
+        {
+            "seerrfin" => "SeerrFin",
+            "native" => "Native",
+            _ => DefaultDropdownStyle
+        };
+    }
+
+    public bool DetailsSeasonPostersEnabled { get; set; } = false;
 
     public string HeroContentOrder { get; set; } = "ContinueWatching,NextUp,LatestMovies,LatestShows,Favorites";
 

@@ -10,41 +10,73 @@ function downloadEpisode(client, episode) {
   link.remove();
 }
 
-function EpisodeCard({ client, episode }) {
+function EpisodeCard({ client, episode, moreLabel }) {
   const score = Number(episode.CommunityRating || 0);
+  const userData = episode.UserData || {};
+  const progress = Math.max(0, Math.min(100, Number(userData.PlayedPercentage || 0)));
   const imageUrl = item.imageUrl(episode, 'Primary', { maxWidth: 840, quality: 90 });
   const action = item.actionAttributes(episode);
-  const actionClass = action.class;
+  const playbackAction = action['data-action'];
+  const userControls = useRef(null);
   delete action.class;
+  delete action['data-action'];
+
+  useEffect(() => {
+    const holder = userControls.current;
+    if (!holder || !episode.UserData) return undefined;
+    // Jellyfin's legacy custom-element polyfill expects native markup
+    const controls = dom.element('<span class="sleekfin-details-episode-user-actions"><button is="emby-playstatebutton" type="button" class="sleekfin-icon-button sleekfin-control-3d"><span class="material-icons check"></span></button><button is="emby-ratingbutton" type="button" class="sleekfin-icon-button sleekfin-control-3d"><span class="material-icons favorite"></span></button></span>');
+    const [played, favorite] = controls.children;
+    Array.from(controls.children).forEach((button) => {
+      button.dataset.id = episode.Id;
+      button.dataset.serverid = action['data-serverid'];
+      button.dataset.type = episode.Type;
+    });
+    played.dataset.played = String(Boolean(userData.Played));
+    favorite.dataset.likes = userData.Likes ?? '';
+    favorite.dataset.isfavorite = String(Boolean(userData.IsFavorite));
+    holder.appendChild(controls);
+    window.CustomElements?.upgradeSubtree?.(controls);
+    return () => controls.remove();
+  }, [episode]);
 
   return (
-    <article class="sleekfin-details-episode">
-      <button {...action} type="button" class={`sleekfin-details-episode-action ${actionClass}`}>
-        {imageUrl && <img src={imageUrl} />}
-        <span class="sleekfin-details-episode-shade" />
-        <span class="sleekfin-details-episode-copy">
-          <span class="sleekfin-details-episode-heading">
-            {episode.IndexNumber != null && <span class="sleekfin-details-episode-number sleekfin-control-3d">{`E${episode.IndexNumber}`}</span>}
-            <span class="sleekfin-details-episode-title">{episode.Name || ''}</span>
+    <article {...action} class="sleekfin-details-episode card card-withuserdata">
+      <div class="cardBox cardScalable">
+        <button data-action={playbackAction} type="button" class="sleekfin-details-episode-action cardImageContainer itemAction">
+          {imageUrl && <img src={imageUrl} />}
+          <span class="sleekfin-details-episode-shade" />
+          <span class="innerCardFooter">
+            {progress > 0 && progress < 100 && <span class="itemProgressBar"><span class="itemProgressBarForeground" style={{ width: `${progress}%` }} /></span>}
           </span>
-          <span class="sleekfin-details-episode-overview">{episode.Overview || ''}</span>
-          <span class="sleekfin-details-episode-footer">
-            <span>
-              <Icon name="play" />
-              {item.formatRuntime(episode.RunTimeTicks)}
+          <span class="sleekfin-details-episode-copy">
+            <span class="sleekfin-details-episode-heading">
+              {episode.IndexNumber != null && <span class="sleekfin-details-episode-number sleekfin-control-3d">{`E${episode.IndexNumber}`}</span>}
+              <span class="sleekfin-details-episode-title cardText">{episode.Name || ''}</span>
             </span>
-            {score > 0 && (
-              <span class="sleekfin-details-episode-score">
-                <Icon name="star" />
-                {score.toFixed(1)}
+            <span class="sleekfin-details-episode-overview">{episode.Overview || ''}</span>
+            <span class="sleekfin-details-episode-footer">
+              <span>
+                <Icon name="play" />
+                {item.formatRuntime(episode.RunTimeTicks)}
               </span>
-            )}
+              {score > 0 && (
+                <span class="sleekfin-details-episode-score">
+                  <Icon name="star" />
+                  {score.toFixed(1)}
+                </span>
+              )}
+            </span>
           </span>
+        </button>
+        <span class="sleekfin-details-episode-actions">
+          {episode.UserData && <span ref={userControls} />}
+          {episode.CanDownload && typeof client.getItemDownloadUrl === 'function' && (
+            <IconButton class="sleekfin-details-episode-download" icon="download" label="Download" raised strokeWidth={1.75} onClick={() => downloadEpisode(client, episode)} />
+          )}
+          <button type="button" class="sleekfin-icon-button sleekfin-control-3d itemAction" data-action="menu" title={moreLabel}><span class="material-icons more_vert" /></button>
         </span>
-      </button>
-      {episode.CanDownload && typeof client.getItemDownloadUrl === 'function' && (
-        <IconButton class="sleekfin-details-episode-download" icon="download" label="Download" raised strokeWidth={1.75} onClick={() => downloadEpisode(client, episode)} />
-      )}
+      </div>
     </article>
   );
 }
@@ -53,7 +85,8 @@ function seasonLabel(season) {
   return season.Name || `Season ${season.IndexNumber || ''}`;
 }
 
-function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
+function Episodes({ client, dropdownStyle, list, mediaItem, moreLabel, seasons }) {
+  const seasonPickerEnabled = dropdownStyle === 'SeerrFin';
   const firstSeason = useMemo(() => seasons.filter((season) => Number(season.IndexNumber) > 0)[0] || seasons[0] || null, [seasons]);
   const [episodes, setEpisodes] = useState([]);
   const [query, setQuery] = useState('');
@@ -62,14 +95,22 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
   const [sortDescending, setSortDescending] = useState(false);
   const [status, setStatus] = useState(firstSeason ? 'loading' : 'error');
   const [view, setView] = useState('grid');
+  const [refresh, setRefresh] = useState(0);
   const [rowScroll, setRowScroll] = useState({ overflow: false, previous: false, next: false });
   const requestGeneration = useRef(0);
   const searchInput = useRef(null);
   const seasonSelect = useRef(null);
   const seasonDropdown = useRef(null);
+  const jellyfinSeasonSelect = useRef(null);
   const selectedSeasonIndex = Math.max(0, seasons.map((season) => String(season.Id)).indexOf(String(selectedSeasonId)));
   const selectedSeason = seasons[selectedSeasonIndex];
   const selectedSeasonLabel = selectedSeason ? seasonLabel(selectedSeason) : 'Seasons';
+
+  useEffect(() => {
+    // Native item menus request a container refresh after editing or deleting an episode.
+    list.refreshItems = () => { setRefresh((value) => value + 1); return Promise.resolve(); };
+    return () => { delete list.refreshItems; };
+  }, [list]);
 
   useEffect(() => {
     if (searchOpen) {
@@ -78,8 +119,29 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
   }, [searchOpen]);
 
   useEffect(() => {
-    if (!seasonPickerEnabled) return undefined;
     const root = seasonSelect.current;
+    if (dropdownStyle === 'Jellyfin' && root) {
+      // Jellyfin's legacy select needs parsed custom-element markup for its TV menu handlers.
+      const select = dom.element('<select is="emby-select" class="emby-select sleekfin-details-season-native"></select>');
+      seasons.forEach((season) => {
+        const option = document.createElement('option');
+        option.value = season.Id;
+        option.textContent = seasonLabel(season);
+        select.appendChild(option);
+      });
+
+      select.value = selectedSeasonId;
+      select.addEventListener('change', () => setSelectedSeasonId(select.value));
+      root.appendChild(select);
+      window.CustomElements?.upgradeSubtree?.(root);
+      jellyfinSeasonSelect.current = select;
+
+      return () => {
+        root.replaceChildren();
+        jellyfinSeasonSelect.current = null;
+      };
+    }
+    if (!seasonPickerEnabled) return undefined;
     const trigger = root?.querySelector('.sleekfin-details-season-trigger');
     if (!root || !trigger) return undefined;
     const dropdown = createDropdown({
@@ -95,9 +157,10 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
       dropdown.destroy();
       if (seasonDropdown.current === dropdown) seasonDropdown.current = null;
     };
-  }, [mediaItem.Id, seasonPickerEnabled]);
+  }, [mediaItem.Id, dropdownStyle, seasons]);
 
   useEffect(() => {
+    if (jellyfinSeasonSelect.current) jellyfinSeasonSelect.current.value = selectedSeasonId;
     seasonDropdown.current?.update(
       seasons.map((season) => ({ value: season.Id, label: seasonLabel(season) })),
       selectedSeasonId,
@@ -139,7 +202,7 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
         requestGeneration.current += 1;
       }
     };
-  }, [client, mediaItem, selectedSeasonId]);
+  }, [client, mediaItem, refresh, selectedSeasonId]);
 
   const visibleEpisodes = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -155,7 +218,7 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
     render(
       <Fragment>
         {visibleEpisodes.map((episode) => (
-          <EpisodeCard client={client} episode={episode} key={episode.Id} />
+          <EpisodeCard client={client} episode={episode} moreLabel={moreLabel} key={episode.Id} />
         ))}
       </Fragment>,
       list,
@@ -181,7 +244,7 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
       resizeObserver?.disconnect();
       if (!resizeObserver) window.removeEventListener('resize', updateScroll);
     };
-  }, [client, list, view, visibleEpisodes]);
+  }, [client, list, moreLabel, view, visibleEpisodes]);
 
   const subtitle = status === 'loading' ? 'Loading episodes' : status === 'error' ? 'Episodes unavailable' : `${visibleEpisodes.length}${visibleEpisodes.length === 1 ? ' episode' : ' episodes'}`;
   const scrollButtonClass = `emby-scrollbuttons-button paper-icon-button-light${document.documentElement.classList.contains('layout-tv') || document.body?.classList.contains('layout-tv') ? ' show-focus' : ''}`;
@@ -195,14 +258,14 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
         </button>
       </span>
     ) : (
-      <span class="sleekfin-details-season-select">
-        <select class="sleekfin-details-season-native" value={selectedSeasonId} onChange={(event) => setSelectedSeasonId(event.currentTarget.value)}>
+      <span class="sleekfin-details-season-select" ref={seasonSelect} data-dropdown-style={dropdownStyle}>
+        {dropdownStyle === 'Native' && <select class="sleekfin-details-season-native" value={selectedSeasonId} onChange={(event) => setSelectedSeasonId(event.currentTarget.value)}>
           {seasons.map((season) => (
             <option value={season.Id} key={season.Id}>
               {seasonLabel(season)}
             </option>
           ))}
-        </select>
+        </select>}
       </span>
     );
   } else {
@@ -260,18 +323,26 @@ function Episodes({ client, list, mediaItem, seasons, seasonPickerEnabled }) {
   );
 }
 
-export function createEpisodes(page, mediaItem, seasons, seasonPickerEnabled) {
+export function createEpisodes(page, mediaItem, seasons, dropdownStyle) {
   const client = window.ApiClient;
   const wrapper = page.querySelector('.detailPageWrapperContainer');
   const secondary = page.querySelector('.detailPageSecondaryContainer');
   if (!client || !wrapper || !secondary) return null;
 
-  const section = dom.element('<section class="sleekfin-details-episodes"><div class="sleekfin-details-episodes-header"></div><div is="emby-itemscontainer" class="sleekfin-details-episode-list" data-contextmenu="false" data-multiselect="false" data-view="grid"></div></section>');
+  const section = dom.element('<section class="sleekfin-details-episodes"><div class="sleekfin-details-episodes-header"></div></section>');
   const header = section.firstElementChild;
-  const list = section.lastElementChild;
+  const list = document.createElement('div', 'emby-itemscontainer');
+  list.classList.add('sleekfin-details-episode-list');
+  list.dataset.monitor = 'videoplayback';
+  list.dataset.multiselect = 'false';
+  list.dataset.view = 'grid';
+  section.appendChild(list);
   let destroyed = false;
-  render(<Episodes client={client} list={list} mediaItem={mediaItem} seasons={seasons} seasonPickerEnabled={seasonPickerEnabled} />, header);
+  const moreLabel = page.querySelector('.btnMoreCommands')?.title || '';
+  render(<Episodes client={client} dropdownStyle={dropdownStyle} list={list} mediaItem={mediaItem} moreLabel={moreLabel} seasons={seasons} />, header);
   wrapper.insertBefore(section, secondary);
+  window.CustomElements?.upgradeAll?.(section, true);
+  page.classList.add('sleekfin-details-has-episodes');
 
   return {
     destroy() {
@@ -280,6 +351,7 @@ export function createEpisodes(page, mediaItem, seasons, seasonPickerEnabled) {
       render(null, list);
       render(null, header);
       section.remove();
+      page.classList.remove('sleekfin-details-has-episodes');
     },
   };
 }

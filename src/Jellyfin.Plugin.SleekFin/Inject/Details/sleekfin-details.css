@@ -115,21 +115,33 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] > .detailPa
     z-index: 1;
 }
 
-/* Native controls stay in this block so Jellyfin's playback handlers can still query them. */
 html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPagePrimaryContainer {
+    display: block;
+    margin: 0;
+    padding: 0 var(--sleekfin-page-gutter);
+}
+
+/* Keep Jellyfin and plugin information in its original containers and hide only relocated UI. */
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPagePrimaryContainer > :is(.detailImageContainer, .detailRibbon),
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .trackSelections {
     display: none !important;
 }
 
-html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPageSecondaryContainer {
-    padding-top: 0;
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPagePrimaryContent {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
-html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) .cardScalable {
-    background: var(--sleekfin-surface);
-    border: 1px solid var(--sleekfin-border);
-    border-radius: 10px;
-    box-sizing: border-box;
-    overflow: hidden;
+/* Keep native metadata queryable while showing it only after it moves into Info. */
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPagePrimaryContent > .detailSection > :is(.detailSectionContent, .itemDetailsGroup) {
+    display: none;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] :is(.detailSectionContent, .itemDetailsGroup) {
+    color: var(--sleekfin-muted);
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 @media (max-width: 767px) {

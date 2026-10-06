@@ -103,9 +103,11 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
 }
 
 .sleekfin-details-title {
-    align-items: flex-end;
+    align-items: flex-start;
     display: flex;
-    height: 96px;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 96px;
     max-width: 340px;
     width: 70vw;
 }
@@ -116,7 +118,7 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
     background-size: contain !important;
     display: block !important;
     filter: drop-shadow(0 3px 14px rgba(0, 0, 0, 0.45));
-    height: 100% !important;
+    height: 96px !important;
     inset: auto !important;
     margin: 0 !important;
     max-width: none !important;
@@ -130,13 +132,14 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
 }
 
 .sleekfin-details-title .nameContainer {
-    align-items: flex-end;
+    align-items: flex-start;
     display: flex;
+    flex-direction: column;
     margin: 0;
     min-width: 0;
 }
 
-.sleekfin-details-hero.sleekfin-details-has-logo .sleekfin-details-title .nameContainer,
+.sleekfin-details-hero.sleekfin-details-has-logo .sleekfin-details-title .nameContainer > :not(.originalTitle),
 .sleekfin-details-has-child-title:not(.sleekfin-details-has-logo) .sleekfin-details-title {
     display: none;
 }
@@ -155,15 +158,16 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
     max-width: 520px;
 }
 
-.sleekfin-details-child-kicker {
+.sleekfin-details-child-title .parentName {
     color: rgba(255, 255, 255, 0.68);
     display: block;
     font: 600 11px/16px var(--sleekfin-font-family);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.05em;
+    margin: 0;
     text-transform: uppercase;
 }
 
-.sleekfin-details-child-name {
+.sleekfin-details-child-title .itemName {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     color: #fff;
@@ -173,6 +177,19 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
     margin: 2px 0 0;
     overflow: hidden;
     text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+}
+
+.sleekfin-details-child-title a {
+    color: inherit;
+}
+
+.sleekfin-details-hero .nameContainer .originalTitle {
+    color: var(--sleekfin-muted);
+    display: block;
+    font: 400 14px/20px var(--sleekfin-font-family);
+    letter-spacing: normal;
+    margin: 6px 0 0;
+    text-shadow: none;
 }
 
 .sleekfin-details-facts,
@@ -211,6 +228,36 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
     padding: 0 5px;
 }
 
+.sleekfin-details-fact-values,
+.sleekfin-details-facts .itemMiscInfo-primary {
+    display: contents;
+}
+
+.sleekfin-details-facts .itemMiscInfo-primary {
+    font: inherit;
+}
+
+/* JE does language updates and deduplication inside the native primary container. */
+.sleekfin-details-facts .itemMiscInfo-primary > :not(.mediaInfoItem-audioLanguage) {
+    display: none !important;
+}
+
+.sleekfin-details-fact-values:not(:empty) + .itemMiscInfo-primary:has(> .mediaInfoItem-audioLanguage)::before {
+    color: rgba(255, 255, 255, 0.42);
+    content: '·';
+    margin: 0 8px;
+}
+
+.sleekfin-details-facts .mediaInfoItem-audioLanguage {
+    margin: 0;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.sleekfin-details-facts .audio-languages-container {
+    min-width: 0;
+}
+
 .sleekfin-details-stack > .overview {
     -webkit-box-orient: vertical;
     color: rgba(255, 255, 255, 0.88) !important;
@@ -243,8 +290,12 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
     }
 
     .sleekfin-details-title {
-        height: 84px;
+        min-height: 84px;
         max-width: 300px;
+    }
+
+    .sleekfin-details-title .detailLogo {
+        height: 84px !important;
     }
 
     .sleekfin-details-title :is(h1, .parentName) {
@@ -257,7 +308,7 @@ html.sleekfin-details-mounted.sleekfin-header-mounted [data-sleekfin-header-menu
         font-size: 13px;
     }
 
-    .sleekfin-details-child-name {
+    .sleekfin-details-child-title .itemName {
         font-size: 21px;
         line-height: 27px;
     }

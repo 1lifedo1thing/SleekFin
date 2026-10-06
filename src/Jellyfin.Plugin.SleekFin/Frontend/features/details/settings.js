@@ -3,5 +3,8 @@ export function loadSettings(client) {
     type: 'GET',
     url: client.getUrl('SleekFin/Details/Settings'),
     dataType: 'json',
-  }).then((settings) => settings?.customDropdownEnabled === true);
+  }).then((settings) => ({
+    dropdownStyle: ['Jellyfin', 'SeerrFin', 'Native'].includes(settings?.dropdownStyle) ? settings.dropdownStyle : 'Jellyfin',
+    seasonPostersEnabled: settings?.seasonPostersEnabled === true,
+  }));
 }

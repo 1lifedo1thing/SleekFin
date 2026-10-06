@@ -144,11 +144,6 @@ html.sleekfin-main-ui :is(.je-hidden-content-page, .je-hidden-management-overlay
     font-family: var(--sleekfin-font-family);
 }
 
-html.sleekfin-main-ui :is(.je-hidden-management-panel, .je-hide-confirm-dialog) {
-    background: var(--sleekfin-surface);
-    border-color: var(--sleekfin-border);
-}
-
 html.sleekfin-main-ui :is(.je-hidden-management-header, .je-hidden-management-toolbar, .je-hidden-group-section-title, .je-hidden-group-item, .je-hidden-section-header) {
     border-color: var(--sleekfin-border);
 }
@@ -215,11 +210,6 @@ html.sleekfin-main-ui .jellyfin-enhanced-toast {
 html.sleekfin-main-ui :is(.je-bookmarks-wrapper, .je-bm-library-modal-container, .je-bm-player-modal-container) {
     color: var(--sleekfin-text);
     font-family: var(--sleekfin-font-family);
-}
-
-html.sleekfin-main-ui :is(.je-bm-library-modal-container, .je-bm-player-modal-container, .je-replacement-modal-container) {
-    background: var(--sleekfin-surface);
-    border: 1px solid var(--sleekfin-border);
 }
 
 html.sleekfin-main-ui :is(.je-bookmark-tabs, .je-bookmark-hero, .je-bookmark-actions-footer, .je-bookmark-list-header, .je-bookmark-modal-actions) {
@@ -364,7 +354,7 @@ html.sleekfin-main-ui .je-downloads-page .je-downloads-search-input:focus {
     border-color: var(--sleekfin-accent);
 }
 
-html.sleekfin-main-ui :is(.jellyseerr-season-content, .je-more-info-modal .modal-container, .jellyseerr-hover-popover, .jellyseerr-4k-popup) {
+html.sleekfin-main-ui :is(.jellyseerr-hover-popover, .jellyseerr-4k-popup) {
     background: var(--sleekfin-surface) !important;
     border: 1px solid var(--sleekfin-border);
     color: var(--sleekfin-text);
@@ -404,6 +394,10 @@ html.sleekfin-main-ui .jellyseerr-form-group select[is="emby-select"]:hover {
 
 html.sleekfin-main-ui :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox):checked {
     background: var(--sleekfin-accent);
+}
+
+html.sleekfin-main-ui :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox):checked:not(:disabled)::before {
+    background: var(--sleekfin-surface);
 }
 
 html.sleekfin-main-ui :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox):focus-visible {
@@ -448,11 +442,6 @@ html.sleekfin-main-ui .jellyseerr-4k-popup-item:not(:disabled):hover {
 
 html.sleekfin-main-ui .jellyseerr-hover-popover .jellyseerr-hover-progress .bar {
     background: var(--sleekfin-accent);
-}
-
-html.sleekfin-main-ui .je-more-info-modal :is(.modal-close, .modal-refresh) {
-    background: var(--sleekfin-surface-raised);
-    color: var(--sleekfin-text);
 }
 
 html.sleekfin-main-ui .je-more-info-modal :is(.keyword, .stat-item, .je-download-row) {
@@ -516,14 +505,6 @@ html.sleekfin-main-ui .streaming-lookup-container :is(.elsewhere-search-button, 
 html.sleekfin-main-ui .streaming-lookup-container div:has(> img[alt]):hover {
     background: var(--sleekfin-border) !important;
     border-color: var(--sleekfin-border-hover) !important;
-}
-
-html.sleekfin-main-ui #streaming-settings-modal > div {
-    background: var(--sleekfin-surface) !important;
-    border-color: var(--sleekfin-border) !important;
-    border-radius: 12px !important;
-    color: var(--sleekfin-text) !important;
-    font-family: var(--sleekfin-font-family);
 }
 
 html.sleekfin-main-ui #streaming-settings-modal :is(#region-select, #regions-autocomplete input, #services-autocomplete input) {

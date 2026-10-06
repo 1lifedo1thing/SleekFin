@@ -2,28 +2,25 @@ select.sleekfin-details-track-native {
     display: none;
 }
 
-html .dialog.sleekfin-details-track-dialog {
+/* Info must sit above navigation and below MUI, JE and native child dialogs. */
+html.sleekfin-main-ui .sleekfin-details-info-backdrop {
+    z-index: 1199 !important;
+}
+
+html.sleekfin-main-ui .sleekfin-details-info-container {
+    z-index: 1200 !important;
+}
+
+html.sleekfin-main-ui .dialog.sleekfin-details-track-dialog {
     --sleekfin-glass-border: 1px solid rgba(255, 255, 255, 0.08);
-    --sleekfin-glass-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
-    background-color: var(--sleekfin-surface) !important;
-    border-radius: 16px;
-    color: var(--sleekfin-text);
     display: flex;
     flex-direction: column;
-    font-family: var(--sleekfin-font-family);
-    max-height: calc(100% - 32px);
-    max-width: 400px;
+    max-width: 560px;
     width: calc(100% - 32px);
 }
 
-.sleekfin-details-track-backdrop {
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-    background-color: rgba(0, 0, 0, 0.65);
-}
-
-.sleekfin-details-track-backdrop.dialogBackdropOpened {
-    opacity: 1;
+html.sleekfin-main-ui .sleekfin-details-track-dialog :not(.material-icons) {
+    font-family: var(--sleekfin-font-family);
 }
 
 .sleekfin-details-track-header {
@@ -68,9 +65,150 @@ html .dialog.sleekfin-details-track-dialog {
     padding: 0 20px 20px;
 }
 
+.sleekfin-details-info-divider {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    margin: 4px 0;
+}
+
+.sleekfin-details-info-metadata {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Preserve Jellyfin and JE render roots while ordering their visible children. */
+.sleekfin-details-info-metadata > .detailSectionContent {
+    display: contents;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .sleekfin-details-info-metadata .itemDetailsGroup {
+    margin: 0 0 12px;
+    order: -1;
+}
+
+.sleekfin-details-info-metadata .streaming-lookup-container {
+    order: 1;
+}
+
+.sleekfin-details-info-metadata .itemExternalLinks {
+    font-size: inherit !important;
+    margin: 0 0 0.5em !important;
+    order: 0;
+    padding-left: 6.85em;
+    position: relative;
+}
+
+.sleekfin-details-info-metadata .itemExternalLinks::before {
+    content: 'Databases';
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+/* Databases needs the wider label column in Jellyfin's mobile layout. */
+.sleekfin-main-ui.layout-mobile .sleekfin-details-info-metadata .detailsGroupItem .label {
+    flex-basis: 6.25em;
+}
+
+.sleekfin-details-info-metadata .itemTags {
+    order: 3;
+}
+
+.sleekfin-details-info-metadata a {
+    color: var(--sleekfin-text);
+}
+
+.sleekfin-details-info-metadata .tagline,
+.sleekfin-details-info-metadata :is(p, .itemDetailsGroup):empty {
+    display: none;
+}
+
+.sleekfin-details-info-metadata .elsewhere-search-button {
+    display: none !important;
+}
+
+html.sleekfin-main-ui .sleekfin-details-info-metadata .streaming-lookup-container div:has(> div > img[alt]) {
+    display: block !important;
+    margin: 0 !important;
+    padding-left: 18px;
+}
+
+html.sleekfin-main-ui .sleekfin-details-info-metadata .streaming-lookup-container div:has(> img[alt]) {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    display: list-item !important;
+    font-weight: 400 !important;
+    list-style: disc;
+    margin: 4px 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    white-space: normal !important;
+}
+
+.sleekfin-details-info-metadata .streaming-lookup-container img[alt] {
+    vertical-align: middle;
+}
+
+.sleekfin-details-info-metadata .streaming-lookup-container > div:not(.sleekfin-details-availability-updated):not(:has(> div > div > img[alt])) > div:first-child:has(> a[href="#"]:not(.elsewhere-custom-branding)) {
+    margin-bottom: 0 !important;
+}
+
+.sleekfin-details-info-metadata .streaming-lookup-container > div:not(.sleekfin-details-availability-updated):not(:has(> div > div > img[alt])) > div:first-child > a[href="#"]:not(.elsewhere-custom-branding) {
+    color: rgb(255, 20, 20) !important;
+    line-height: inherit;
+    margin: 0;
+    max-width: calc(100% - 40px);
+    padding: 0;
+}
+
+.sleekfin-details-info-metadata .sleekfin-details-availability-updated > div:first-child {
+    margin: 0 !important;
+    position: absolute;
+    right: 12px;
+    top: 12px;
+}
+
+.sleekfin-details-info-metadata .sleekfin-details-availability-updated > div:first-child > a,
+.sleekfin-details-info-metadata .sleekfin-details-availability-updated > :not(:first-child):not(#streaming-result-container),
+.sleekfin-details-info-metadata #streaming-result-container button {
+    display: none !important;
+}
+
+.sleekfin-details-info-metadata .sleekfin-details-availability-updated > #streaming-result-container {
+    min-height: 28px;
+    padding-right: 40px;
+}
+
+html.sleekfin-main-ui .sleekfin-details-info-metadata .streaming-lookup-container .sleekfin-details-availability-updated #streaming-result-container > div {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sleekfin-details-info-metadata .detailsGroupItem .label {
+    font-size: inherit;
+}
+
+.sleekfin-details-info-metadata .detailsGroupItem > :not(.label) {
+    min-width: 0;
+}
+
 .sleekfin-details-track-content .selectContainer {
     margin: 0;
-    padding: 6px;
+}
+
+.sleekfin-details-basic-native {
+    box-sizing: border-box;
+    color-scheme: dark;
+    font: inherit;
+    width: 100%;
 }
 
 .sleekfin-details-track-content .emby-select {

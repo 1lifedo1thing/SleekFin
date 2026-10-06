@@ -1604,14 +1604,27 @@
                             </div>
                             <div class="sleekfin-toggle-row">
                                 <div class="sleekfin-toggle-copy">
-                                    <label class="sleekfin-toggle-label" for="sleekFinDetailsCustomDropdownEnabled">Use custom SleekFin dropdown</label>
-                                    <div class="sleekfin-field-description">Uses SleekFin dropdowns for the season picker and media settings. Turn off to use native dropdowns. Off by default, because native inputs behave more reliably on older devices.</div>
+                                    <label class="sleekfin-toggle-label" for="sleekFinDetailsSeasonPostersEnabled">Use season posters</label>
+                                    <div class="sleekfin-field-description">Show season posters instead of an episode carousel on series pages. Season and episode pages still show episodes.</div>
                                 </div>
                                 <div class="sleekfin-toggle-actions">
                                     <label class="sleekfin-toggle">
-                                        <input id="sleekFinDetailsCustomDropdownEnabled" type="checkbox" />
+                                        <input id="sleekFinDetailsSeasonPostersEnabled" type="checkbox" />
                                         <span class="sleekfin-toggle-slider"></span>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="sleekfin-toggle-row">
+                                <div class="sleekfin-toggle-copy">
+                                    <label class="sleekfin-toggle-label" for="sleekFinDropdownStyle">Dropdown style</label> <!-- todo: finish this -->
+                                    <div class="sleekfin-field-description">Choose Jellyfin, SeerrFin, or basic browser dropdowns for season and media selectors.</div>
+                                </div>
+                                <div class="sleekfin-toggle-actions">
+                                    <select id="sleekFinDropdownStyle" class="sleekfin-input">
+                                        <option value="Jellyfin">Jellyfin</option>
+                                        <option value="SeerrFin">SeerrFin</option>
+                                        <option value="Native">Basic native</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="sleekfin-toggle-row">
@@ -2135,7 +2148,8 @@
             var enabledInput = document.getElementById('sleekFinEnabled');
             var heroEnabledInput = document.getElementById('sleekFinHeroEnabled');
             var detailsEnabledInput = document.getElementById('sleekFinDetailsEnabled');
-            var detailsDropdownInput = document.getElementById('sleekFinDetailsCustomDropdownEnabled');
+            var detailsSeasonPostersInput = document.getElementById('sleekFinDetailsSeasonPostersEnabled');
+            var dropdownStyleInput = document.getElementById('sleekFinDropdownStyle');
             var accentInput = document.getElementById('sleekFinAccentColor');
             var randomizedInput = document.getElementById('sleekFinHeroRandomized');
             var sources = document.getElementById('sleekFinHeroSources');
@@ -2333,7 +2347,7 @@
 
             var missingHeroField = Object.keys(heroFields).some(function (name) { return !heroFields[name]; });
 
-            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !accentInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
+            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !detailsSeasonPostersInput || !dropdownStyleInput || !accentInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
                 return;
             }
 
@@ -3710,7 +3724,9 @@
                         enabledInput.checked = readValue(configuration, 'HeaderEnabled') !== false;
                         heroEnabledInput.checked = readValue(configuration, 'HeroEnabled') !== false;
                         detailsEnabledInput.checked = readValue(configuration, 'DetailsEnabled') !== false;
-                        detailsDropdownInput.checked = readValue(configuration, 'DetailsSeasonPickerEnabled') === true;
+                        detailsSeasonPostersInput.checked = readValue(configuration, 'DetailsSeasonPostersEnabled') === true;
+                        var dropdownStyle = readValue(configuration, 'DropdownStyle');
+                        dropdownStyleInput.value = ['Jellyfin', 'SeerrFin', 'Native'].indexOf(dropdownStyle) !== -1 ? dropdownStyle : dropdownStyle === undefined && readValue(configuration, 'DetailsSeasonPickerEnabled') === true ? 'SeerrFin' : 'Jellyfin';
                         accentInput.value = readValue(configuration, 'AccentColor') || accentInput.defaultValue;
                         applyHeroConfiguration(configuration);
                         applyBuilderConfiguration(configuration);
@@ -3782,7 +3798,9 @@
                         configuration.HeaderEnabled = enabledInput.checked;
                         configuration.HeroEnabled = heroEnabledInput.checked;
                         configuration.DetailsEnabled = detailsEnabledInput.checked;
-                        configuration.DetailsSeasonPickerEnabled = detailsDropdownInput.checked;
+                        configuration.DetailsSeasonPostersEnabled = detailsSeasonPostersInput.checked;
+                        configuration.DropdownStyle = dropdownStyleInput.value;
+                        configuration.DetailsSeasonPickerEnabled = dropdownStyleInput.value === 'SeerrFin';
                         configuration.AccentColor = accentInput.value;
                         saveHeroConfiguration(configuration, contentOrder);
                         saveBuilderConfiguration(configuration);
@@ -3793,6 +3811,7 @@
                         if (typeof CustomEvent === 'function') {
                             window.dispatchEvent(new CustomEvent('sleekfin:header-settings-changed'));
                             window.dispatchEvent(new CustomEvent('sleekfin:hero-settings-changed'));
+                            window.dispatchEvent(new CustomEvent('sleekfin:details-settings-changed'));
                         }
                     })
                     .catch(function () {

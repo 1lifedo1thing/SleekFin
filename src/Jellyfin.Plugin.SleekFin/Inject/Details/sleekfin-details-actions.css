@@ -3,28 +3,121 @@
     display: flex !important;
     flex-wrap: wrap;
     gap: 12px;
+    justify-content: flex-start;
     margin: 18px 0 0 !important;
+    padding: 0 0 52px !important;
+    position: relative;
 }
 
 .sleekfin-details-stack > .mainDetailButtons > * {
-    display: none !important;
+    order: 6;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnDownload, .btnUserRating):not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > :not(.hide):not([hidden]) {
     display: inline-flex !important;
     margin: 0 !important;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > .btnPlay:not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > [hidden] {
+    display: none !important;
+}
+
+/* Jellyfin keeps video downloads in More even when the item permits downloading. */
+.sleekfin-details-stack > .mainDetailButtons[data-sleekfin-can-download="true"] > .btnDownload.hide:not([hidden]) {
+    display: inline-flex !important;
+    margin: 0 !important;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlay, .btnReplay) {
     order: 1;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > .btnDownload:not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > .btnDownload {
     order: 2;
 }
 
-.sleekfin-details-stack > .mainDetailButtons > .btnUserRating:not(.hide) {
+.sleekfin-details-stack > .mainDetailButtons > .btnUserRating {
     order: 3;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .btnPlayTrailer {
+    order: 4;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-enhanced-action {
+    order: 5;
+}
+
+[data-sleekfin-details] [data-sleekfin-enhanced-source] {
+    display: none !important;
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action:not(.arr-dropdown) {
+    align-items: center;
+    border-radius: 50% !important;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 0 !important;
+    height: 40px;
+    justify-content: center;
+    margin: 0 !important;
+    min-width: 0;
+    padding: 0 !important;
+    width: 40px;
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action :is(img, .arr-tag-link-icon, .arr-tag-link-icon svg),
+.sleekfin-details-stack .sleekfin-details-enhanced-action.letterboxd-link-icon::before {
+    height: 22px !important;
+    margin: 0 !important;
+    width: 22px !important;
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action .material-icons {
+    font-size: 22px !important;
+    margin: 0 !important;
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action :is(.detailButton-icon-text, .arr-tag-link-text),
+.sleekfin-details-stack .sleekfin-details-enhanced-action.arr-link > span,
+.sleekfin-details-stack .sleekfin-details-enhanced-action.je-series-request-more-btn > span:not(.material-icons) {
+    display: none !important;
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action.arr-dropdown .arr-dropdown-menu {
+    box-sizing: border-box;
+    max-width: calc(100vw - 32px);
+    min-width: min(240px, calc(100vw - 32px));
+}
+
+.sleekfin-details-stack .sleekfin-details-enhanced-action.arr-dropdown .arr-dropdown-item-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > :is(.btnPlaystate, .sleekfin-details-track-settings, .btnMoreCommands) {
+    bottom: 0;
+    position: absolute;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .btnPlaystate {
+    right: 104px;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-track-settings {
+    right: 52px;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .btnMoreCommands {
+    right: 0;
+}
+
+.sleekfin-details-stack > .mainDetailButtons > .detailButton:not(.sleekfin-button) {
+    border-radius: 50%;
+    flex: 0 0 auto;
+    height: 40px;
+    width: 40px;
 }
 
 .sleekfin-details-stack > .mainDetailButtons .detailButton-content {
@@ -32,24 +125,33 @@
     height: auto;
 }
 
-.sleekfin-details-stack > .mainDetailButtons .detailButton-content .material-icons {
+.sleekfin-details-stack > .mainDetailButtons .sleekfin-button .detailButton-content .material-icons {
     display: none !important;
-}
-
-.sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-action-spacer:not([hidden]) {
-    display: block !important;
-    flex-grow: 1;
-    /* Cancel the spacer's extra gap so the settings button can stay on the same line. */
-    margin-left: -12px;
-    order: 4;
 }
 
 .sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-track-settings:not([hidden]) {
     border-radius: 50%;
-    display: inline-flex !important;
-    flex: 0 0 auto;
+    color: #fff;
     height: 40px;
-    margin-left: auto;
-    order: 5;
     width: 40px;
+}
+
+@media (min-width: 768px) {
+    .sleekfin-details-stack > .mainDetailButtons {
+        padding: 0 168px 0 0 !important;
+    }
+
+    .sleekfin-details-stack > .mainDetailButtons > .btnPlaystate {
+        right: 112px;
+    }
+
+    .sleekfin-details-stack > .mainDetailButtons > .sleekfin-details-track-settings {
+        right: 56px;
+    }
+
+    .sleekfin-details-stack > .mainDetailButtons > :is(.detailButton:not(.sleekfin-button), .sleekfin-details-track-settings),
+    .sleekfin-details-stack .sleekfin-details-enhanced-action:not(.arr-dropdown) {
+        height: 44px;
+        width: 44px;
+    }
 }

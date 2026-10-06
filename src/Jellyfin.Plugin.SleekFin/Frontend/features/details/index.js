@@ -15,7 +15,9 @@ const SUPPORTED_TYPES = ['Movie', 'Series', 'Season', 'Episode'];
 // Jellyfin activates a page through viewManager.onViewChange, which dispatches these on the page
 // element it just made current, so event.target identifies the page Jellyfin is showing.
 const VIEW_EVENTS = ['viewinit', 'viewbeforeshow', 'viewshow'];
-const WINDOW_EVENTS = ['hashchange', 'popstate', 'pageshow'];
+const WINDOW_EVENTS = ['hashchange', 'popstate', 'pageshow', 'je-hidden-content-changed'];
+const SETTINGS_EVENT = 'sleekfin:details-settings-changed';
+const DEFAULT_SETTINGS = Object.freeze({ dropdownStyle: 'Jellyfin', seasonPostersEnabled: false });
 const features = (window.SleekFinFeatures = window.SleekFinFeatures || {});
 
 features.details?.stop?.();
@@ -33,7 +35,7 @@ const state = {
   previousPage: null,
   reconcileTimer: 0,
   retryTimer: 0,
-  seasonPickerEnabled: false,
+  settings: DEFAULT_SETTINGS,
   seasons: [],
   started: false,
   stopHidden: null,
@@ -134,35 +136,36 @@ function routeClient(serverId) {
 
 // A stalled optional settings request must fall back to native dropdowns without blocking details.
 const SETTINGS_TIMEOUT_MS = 4000;
-let dropdownSetting = null;
+let detailsSettings = null;
 
-function loadDropdownSetting(client) {
-  if (!dropdownSetting) {
+function loadDetailsSettings(client) {
+  if (!detailsSettings) {
     let answered = false;
     const fromServer = Promise.resolve().then(() => loadSettings(client))
-      .then((enabled) => {
+      .then((settings) => {
         answered = true;
-        return enabled;
+        return settings;
       })
-      .catch(() => false);
-    dropdownSetting = Promise.race([
+      .catch(() => DEFAULT_SETTINGS);
+    detailsSettings = Promise.race([
       fromServer,
-      new Promise((resolve) => window.setTimeout(() => resolve(false), SETTINGS_TIMEOUT_MS)),
-    ]).then((enabled) => {
+      new Promise((resolve) => window.setTimeout(() => resolve(DEFAULT_SETTINGS), SETTINGS_TIMEOUT_MS)),
+    ]).then((settings) => {
       // Retry failures on the next picker rather than caching an unavailable server's fallback.
-      if (!answered) dropdownSetting = null;
-      return enabled;
+      if (!answered) detailsSettings = null;
+      return settings;
     });
   }
-  return dropdownSetting;
+  return detailsSettings;
+}
+
+function reloadSettings() {
+  detailsSettings = null;
 }
 
 function loadSeasons(client, userId, mediaItem) {
   if (mediaItem.Type === 'Series') {
-    return Promise.all([client.getSeasons(mediaItem.Id, { userId }), loadDropdownSetting(client)]).then(([seasons, enabled]) => {
-      state.seasonPickerEnabled = enabled;
-      return seasons;
-    });
+    return Promise.all([client.getSeasons(mediaItem.Id, { userId }), loadDetailsSettings(client)]).then(([seasons, settings]) => ({ ...seasons, settings }));
   }
   if (mediaItem.Type === 'Season') return Promise.resolve({ Items: [mediaItem] });
   if (mediaItem.Type === 'Episode' && mediaItem.SeasonId) return client.getItem(userId, mediaItem.SeasonId).then((season) => ({ Items: [season] }));
@@ -178,8 +181,9 @@ function destroyMount() {
   state.mount.sections.destroy();
   state.mount.actions.destroy();
   state.mount.hero.destroy();
-  state.mount.page.classList.remove('sleekfin-details-entering');
+  state.mount.page.classList.remove('sleekfin-details-entering', 'sleekfin-details-season-posters');
   state.mount.page.removeAttribute('data-sleekfin-details');
+  state.mount.page.removeAttribute('data-sleekfin-item-type');
   state.mount = null;
   document.documentElement.classList.remove('sleekfin-details-mounted');
 }
@@ -193,14 +197,17 @@ function mount() {
     revealNativePage();
     return;
   }
-  const actions = createActions(hero.actions);
-  const sections = createSections(state.page);
+  const actions = createActions(hero.actions, state.page);
+  const seasonPosters = state.item.Type === 'Series' && state.settings.seasonPostersEnabled;
+  state.page.dataset.sleekfinItemType = state.item.Type;
+  state.page.classList.toggle('sleekfin-details-season-posters', seasonPosters);
+  const sections = createSections(state.page, state.seasons);
   const similar = createSimilar(state.page);
-  const trackPickers = createTrackPickers(state.page, hero.actions, () => loadDropdownSetting(routeClient(state.currentServerId)), (id) => {
+  const trackPickers = createTrackPickers(state.page, hero.actions, () => loadDetailsSettings(routeClient(state.currentServerId)).then((settings) => settings.dropdownStyle), (id) => {
     if (!state.item?.MediaSources?.some((source) => source.Id === id)) return;
     if ((id !== state.item?.Id || state.loadingId) && id !== state.loadingId) load(id, state.currentServerId, state.page.querySelector('.selectSource'));
   });
-  const episodes = ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length ? createEpisodes(state.page, state.item, state.seasons, state.seasonPickerEnabled) : null;
+  const episodes = !seasonPosters && ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length ? createEpisodes(state.page, state.item, state.seasons, state.settings.dropdownStyle) : null;
 
   state.mount = {
     actions,
@@ -258,11 +265,14 @@ function load(id, serverId, sourceSelect = null) {
       loadSeasons(client, userId, mediaItem)
         .then((result) => {
           if (!isCurrent() || state.item !== mediaItem) return;
+          state.settings = result.settings || DEFAULT_SETTINGS;
           state.seasons = result.Items || [];
           if (state.mount) {
+            const seasonPosters = state.item.Type === 'Series' && state.settings.seasonPostersEnabled;
+            state.page.classList.toggle('sleekfin-details-season-posters', seasonPosters);
             state.mount.hero.render(state.item, state.seasons);
-            if (!state.mount.episodes && ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length) {
-              state.mount.episodes = createEpisodes(state.page, state.item, state.seasons, state.seasonPickerEnabled);
+            if (!seasonPosters && !state.mount.episodes && ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length) {
+              state.mount.episodes = createEpisodes(state.page, state.item, state.seasons, state.settings.dropdownStyle);
             }
           }
           scheduleReconcile();
@@ -299,6 +309,7 @@ function select(page, id, serverId) {
   // The page recorded for the previous route must not be mounted onto this one.
   state.previousPage = previousPage;
   state.activePage = null;
+  state.settings = DEFAULT_SETTINGS;
   state.seasons = [];
   load(id, serverId);
 }
@@ -313,6 +324,7 @@ function clearState() {
   state.page = null;
   state.previousPage = null;
   state.activePage = null;
+  state.settings = DEFAULT_SETTINGS;
   state.seasons = [];
 }
 
@@ -447,7 +459,7 @@ function reconcile() {
   }
   state.mount.hero.sync();
   state.mount.actions.reconcile();
-  state.mount.sections.reconcile();
+  state.mount.sections.reconcile(state.seasons);
   state.mount.similar.render();
   state.mount.trackPickers.reconcile();
 }
@@ -524,6 +536,7 @@ function start() {
     viewshow: true,
   });
   state.stopHistory = watchHistory();
+  window.addEventListener(SETTINGS_EVENT, reloadSettings);
   onRouteChange();
 }
 
@@ -537,6 +550,7 @@ function stop() {
   state.stopWatching = null;
   state.stopHistory?.();
   state.stopHistory = null;
+  window.removeEventListener(SETTINGS_EVENT, reloadSettings);
   reset();
 }
 

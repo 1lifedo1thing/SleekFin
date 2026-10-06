@@ -1,4 +1,4 @@
-import { Facts, Fragment, h, IconButton, item, dom, render } from '../../shared/runtime.js';
+import { Facts, h, IconButton, item, dom, render } from '../../shared/runtime.js';
 
 function goBack() {
   if (window.history.length > 1) {
@@ -6,24 +6,6 @@ function goBack() {
   } else {
     window.location.hash = '#/home';
   }
-}
-
-function childTitle(mediaItem) {
-  if (mediaItem.Type !== 'Season' && mediaItem.Type !== 'Episode') return null;
-
-  let kicker = mediaItem.SeriesName || 'TV Show';
-  if (mediaItem.Type === 'Episode') {
-    const season = mediaItem.SeasonName || (mediaItem.ParentIndexNumber ? `Season ${mediaItem.ParentIndexNumber}` : '');
-    const episode = mediaItem.IndexNumber ? `Episode ${mediaItem.IndexNumber}` : '';
-    kicker = [season, episode].filter(Boolean).join(' · ') || kicker;
-  }
-
-  return (
-    <>
-      <span class="sleekfin-details-child-kicker">{kicker}</span>
-      <h1 class="sleekfin-details-child-name">{mediaItem.Name || ''}</h1>
-    </>
-  );
 }
 
 function factValues(mediaItem, seasons) {
@@ -60,9 +42,11 @@ export function createHero(page) {
   const title = stack.querySelector('.sleekfin-details-title');
   const childTitleRoot = stack.querySelector('.sleekfin-details-child-title');
   const factsRoot = stack.querySelector('.sleekfin-details-facts');
+  const factsValuesRoot = dom.element('<span class="sleekfin-details-fact-values"></span>');
+  factsRoot.appendChild(factsValuesRoot);
   const genresRoot = stack.querySelector('.sleekfin-details-genres');
-  const downloadWasHidden = actions.querySelector('.btnDownload')?.classList.contains('hide');
   const logo = page.querySelector('.detailLogo');
+  const name = page.querySelector('.nameContainer');
   const overview = page.querySelector('.overview');
 
   function move(element, destination) {
@@ -73,8 +57,8 @@ export function createHero(page) {
 
   function restoreMoved() {
     moved.reverse().forEach((record) => {
-      if (!dom.isConnected(record.element)) return;
-      if (dom.isConnected(record.parent)) {
+      if (!hero.contains(record.element)) return;
+      if (page.contains(record.parent)) {
         record.parent.insertBefore(record.element, record.next?.parentNode === record.parent ? record.next : null);
       } else {
         record.element.remove();
@@ -86,13 +70,14 @@ export function createHero(page) {
   function renderHero(mediaItem, seasons) {
     const backdropUrl = item.imageUrl(mediaItem, 'Backdrop', { maxWidth: Math.max(960, window.innerWidth), inherit: true, quality: 90 });
     const isChild = mediaItem.Type === 'Season' || mediaItem.Type === 'Episode';
+    actions.dataset.sleekfinCanDownload = String(['Movie', 'Episode'].includes(mediaItem.Type) && mediaItem.CanDownload === true && (!window.NativeShell || window.NativeShell.AppHost.supports('filedownload')));
     childTitleRoot.hidden = !isChild;
     hero.classList.toggle('sleekfin-details-has-child-title', isChild);
-    render(childTitle(mediaItem), childTitleRoot);
-    render(<Facts values={factValues(mediaItem, seasons)} />, factsRoot);
+    const nameRoot = isChild ? childTitleRoot : title;
+    if (name && name.parentNode !== nameRoot) nameRoot.appendChild(name);
+    render(<Facts values={factValues(mediaItem, seasons)} />, factsValuesRoot);
     render(<Facts values={(mediaItem.Genres || []).map((genre) => ({ text: genre }))} />, genresRoot);
 
-    actions.querySelector('.btnDownload')?.classList.toggle('hide', !['Movie', 'Episode'].includes(mediaItem.Type) || !mediaItem.CanDownload);
     if (backdropUrl) {
       nativeBackdrop.style.backgroundImage = `url("${backdropUrl.replace(/["\\]/g, '\\$&')}")`;
     }
@@ -116,7 +101,8 @@ export function createHero(page) {
   render(<IconButton class="sleekfin-details-back" icon="arrowLeft" label="Back" raised onClick={goBack} />, backRoot);
   stack.addEventListener('click', (event) => { if (overview?.contains(event.target)) page.querySelector('.overview-expand')?.click(); });
   move(logo, title);
-  move(page.querySelector('.nameContainer'), title);
+  move(name, title);
+  move(page.querySelector('.itemMiscInfo-primary'), factsRoot);
   move(overview, stack);
   move(page.querySelector('.overview-controls'), stack);
   move(actions, stack);
@@ -126,12 +112,11 @@ export function createHero(page) {
   return {
     actions,
     destroy() {
+      delete actions.dataset.sleekfinCanDownload;
       overview?.removeAttribute('title');
-      actions.querySelector('.btnDownload')?.classList.toggle('hide', downloadWasHidden);
       render(null, backRoot);
       backRoot.remove();
-      render(null, childTitleRoot);
-      render(null, factsRoot);
+      render(null, factsValuesRoot);
       render(null, genresRoot);
       restoreMoved();
       hero.remove();

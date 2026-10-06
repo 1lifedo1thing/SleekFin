@@ -16,7 +16,8 @@ public sealed class SleekFinDetailsController : ControllerBase
         Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
         return Ok(new
         {
-            customDropdownEnabled = configuration.DetailsSeasonPickerEnabled
+            dropdownStyle = configuration.DropdownStyle,
+            seasonPostersEnabled = configuration.DetailsSeasonPostersEnabled
         });
     }
 }

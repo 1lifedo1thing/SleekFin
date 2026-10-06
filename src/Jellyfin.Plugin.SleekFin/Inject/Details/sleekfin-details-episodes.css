@@ -33,6 +33,7 @@
     width: 7px;
 }
 
+.sleekfin-details-season-select > .emby-select.sleekfin-details-season-native,
 .sleekfin-details-season-native,
 .sleekfin-details-season-trigger,
 .sleekfin-details-season-title {
@@ -56,6 +57,22 @@
     cursor: pointer;
     max-width: 100%;
     padding: 0 22px 0 0;
+}
+
+.sleekfin-details-season-select > .emby-select.sleekfin-details-season-native {
+    margin: 0;
+    padding: 0 22px 0 0;
+}
+
+.sleekfin-details-season-select > :is(.selectLabel, .selectArrowContainer),
+.sleekfin-details-season-select[data-dropdown-style="Native"]::after {
+    display: none;
+}
+
+.sleekfin-details-season-select[data-dropdown-style="Native"] > select {
+    -webkit-appearance: auto;
+    appearance: auto;
+    padding: 0;
 }
 
 .sleekfin-details-season-trigger {
@@ -180,7 +197,7 @@
     display: none;
 }
 
-.sleekfin-details-episode {
+.sleekfin-details-episode.card {
     aspect-ratio: 16 / 9;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 16px;
@@ -188,6 +205,20 @@
     overflow: hidden;
     position: relative;
     scroll-snap-align: start;
+}
+
+.sleekfin-details-episode > .cardBox {
+    height: 100%;
+    /* Override Jellyfin's directional card margins; this list already supplies its own gap. */
+    margin: 0 !important;
+    position: relative;
+}
+
+.sleekfin-details-episode .je-hide-btn {
+    bottom: 10px;
+    left: 10px;
+    right: auto;
+    top: auto;
 }
 
 .sleekfin-details-episode-action {
@@ -251,9 +282,12 @@
     top: 10px;
 }
 
-.sleekfin-details-episode-title {
+.sleekfin-details-episode-title.cardText {
     font: 600 17px/22px var(--sleekfin-font-family);
     min-width: 0;
+    overflow: visible;
+    padding: 0;
+    white-space: normal;
 }
 
 .sleekfin-details-episode-overview {
@@ -275,6 +309,10 @@
     margin-top: 9px;
 }
 
+.sleekfin-details-episode-list[data-view="grid"] .sleekfin-details-episode:has(.je-hide-btn) .sleekfin-details-episode-footer {
+    padding-left: 30px;
+}
+
 .sleekfin-details-episode-footer > :where(span) {
     align-items: center;
     display: inline-flex;
@@ -290,13 +328,46 @@
     width: 11px;
 }
 
-.sleekfin-details-episode-download {
-    height: 32px;
+.sleekfin-details-episode-actions,
+.sleekfin-details-episode-user-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.sleekfin-details-episode-actions {
     position: absolute;
     right: 10px;
     top: 10px;
-    width: 32px;
     z-index: 2;
+}
+
+.sleekfin-details-episode-actions button {
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    width: 32px;
+}
+
+.sleekfin-details-episode-actions .material-icons {
+    font-size: 18px;
+}
+
+.sleekfin-details-episode .cardIndicators {
+    /* Jellyfin recreates watched badges on user-data updates; the native action already shows that state. */
+    display: none;
+}
+
+.sleekfin-details-episode .innerCardFooter {
+    right: 0;
+}
+
+.sleekfin-details-episode .itemProgressBar {
+    display: block;
+    height: 3px;
+}
+
+.sleekfin-details-episode .itemProgressBarForeground {
+    background: var(--sleekfin-accent);
 }
 
 .sleekfin-details-episode:hover .sleekfin-details-episode-action > img {
@@ -325,14 +396,9 @@
 }
 
 .sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-copy {
-    bottom: auto;
     left: 268px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode:has(> .sleekfin-details-episode-download) .sleekfin-details-episode-heading {
-    padding-inline-end: 32px;
+    padding-top: 44px;
+    justify-content: center;
 }
 
 .sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-title {
@@ -341,7 +407,12 @@
     white-space: nowrap;
 }
 
+.sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-overview {
+    -webkit-line-clamp: 1;
+}
+
 @media (max-width: 767px) {
+    .sleekfin-details-season-select > .emby-select.sleekfin-details-season-native,
     .sleekfin-details-season-native,
     .sleekfin-details-season-trigger,
     .sleekfin-details-season-title {
@@ -371,9 +442,13 @@
         width: 42%;
     }
 
+    .sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-shade {
+        background: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.78) 42%, rgba(0, 0, 0, 0.96) 55%);
+    }
+
     .sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-copy {
         left: 42%;
-        padding: 12px;
+        padding: 44px 12px 12px;
     }
 
     .sleekfin-details-episode-list[data-view="list"] .sleekfin-details-episode-overview {

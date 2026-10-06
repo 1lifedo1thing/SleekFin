@@ -3,11 +3,7 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPage
     padding: 0 var(--sleekfin-page-gutter) 72px !important;
 }
 
-html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailPageSecondaryContainer > .detailVerticalSection:not(#castCollapsible):not(#similarCollapsible) {
-    display: none !important;
-}
-
-html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] #castCollapsible {
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] :is(.detailVerticalSection, .jellyseerr-details-section) {
     margin: 36px 0 0 !important;
 }
 
@@ -15,12 +11,159 @@ html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] #similarCol
     margin: 56px 0 0 !important;
 }
 
-.sleekfin-details-original-heading {
+.sleekfin-details-section-heading[hidden] {
     display: none !important;
 }
 
-html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] :is(#castCollapsible, #similarCollapsible) > .sleekfin-section-heading {
+.sleekfin-details-section-heading {
     margin-bottom: 20px;
+}
+
+.sleekfin-details-section-heading > .sleekfin-section-copy {
+    flex: 1;
+}
+
+.sleekfin-details-section-heading .sectionTitle {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details].sleekfin-details-has-episodes[data-sleekfin-item-type="Series"]:not(.sleekfin-details-season-posters) #childrenContent,
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details].sleekfin-details-has-episodes[data-sleekfin-item-type="Season"] #listChildrenCollapsible,
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details].sleekfin-details-has-episodes[data-sleekfin-item-type="Episode"] .moreFromSeasonSection {
+    display: none !important;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details].sleekfin-details-has-episodes[data-sleekfin-item-type="Series"]:not(.sleekfin-details-season-posters) #listChildrenCollapsible {
+    margin: 0 !important;
+}
+
+.sleekfin-details-season-actions {
+    margin: 24px 0 0;
+}
+
+.sleekfin-details-season-actions .sleekfin-section-rail,
+.sleekfin-details-season-actions .sectionTitle > span {
+    display: none;
+}
+
+.sleekfin-details-season-actions .sectionTitle > button {
+    margin-left: 0 !important;
+}
+
+/* Native card widths include an outer margin; leave room for Play and the three 32px actions. */
+.sleekfin-details-season-card.card {
+    min-width: calc(166px + 1.2em);
+}
+
+.sleekfin-details-season-card .cardBox {
+    position: relative;
+}
+
+.sleekfin-details-season-card .cardOverlayContainer {
+    background: transparent;
+    opacity: 1;
+}
+
+.sleekfin-details-season-card-actions,
+.sleekfin-details-season-card .cardOverlayContainer > .cardOverlayButton-br {
+    bottom: auto;
+    display: flex;
+    gap: 4px;
+    left: auto;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 2;
+}
+
+.sleekfin-details-season-card.card :is(.cardOverlayButton, .je-hide-btn),
+.sleekfin-details-season-card.card :is(.cardOverlayButton, .je-hide-btn):hover {
+    border-radius: 12px;
+    color: var(--sleekfin-muted);
+    height: 32px;
+    margin: 0;
+    opacity: 1;
+    padding: 0;
+    transform: none;
+    width: 32px;
+}
+
+.sleekfin-details-season-card.card :is(.cardOverlayButton, .je-hide-btn):hover {
+    color: var(--sleekfin-text);
+}
+
+.sleekfin-details-season-card :is(.cardOverlayButton, .je-hide-btn) .material-icons {
+    font-size: 18px;
+    transform: none;
+}
+
+.sleekfin-details-season-card .cardOverlayButton.sleekfin-details-season-card-play {
+    bottom: auto;
+    left: 10px;
+    position: absolute;
+    right: auto;
+    top: 10px;
+    z-index: 2;
+}
+
+/* Jellyfin's hover icons have important sizing and a second circular background. */
+.sleekfin-details-season-card .cardOverlayButtonIcon {
+    background-color: transparent !important;
+    font-size: 18px !important;
+    height: 18px !important;
+    width: 18px !important;
+}
+
+.sleekfin-details-season-card .cardIndicators {
+    bottom: 10px;
+    top: auto;
+}
+
+.sleekfin-details-season-card .playedIndicator {
+    display: none;
+}
+
+.sleekfin-details-season-card .je-hide-btn {
+    left: 10px;
+    right: auto;
+    top: 52px;
+}
+
+.sleekfin-details-season-link {
+    background: transparent;
+    border: 0;
+    color: inherit;
+    display: block;
+    font: inherit;
+    padding: 0;
+    text-align: inherit;
+    width: 100%;
+}
+
+html.layout-tv .sleekfin-details-season-card:focus-within .cardScalable {
+    border-color: var(--sleekfin-accent) !important;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailVerticalSection .cardScalable {
+    background: var(--sleekfin-surface);
+    border: 1px solid var(--sleekfin-border);
+    border-radius: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailVerticalSection :is(.cardContent, .cardImageContainer, .blurhash-canvas) {
+    border-radius: 9px;
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailVerticalSection .cardText {
+    color: var(--sleekfin-text);
+    font-family: var(--sleekfin-font-family);
+}
+
+html.sleekfin-details-mounted #itemDetailPage[data-sleekfin-details] .detailVerticalSection .cardText-secondary {
+    color: var(--sleekfin-muted);
 }
 
 html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) > [is="emby-scroller"] {
@@ -57,24 +200,18 @@ html.sleekfin-details-mounted #castCollapsible .cardPadder {
     padding-bottom: 133.333% !important;
 }
 
-html.sleekfin-details-mounted :is(#castCollapsible, #similarCollapsible) :is(.cardContent, .cardImageContainer, .blurhash-canvas),
 html.sleekfin-details-mounted #castCollapsible .cardOverlayContainer {
     border-radius: 9px;
-}
-
-html.sleekfin-details-mounted #castCollapsible .cardOverlayContainer {
     background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.64));
 }
 
 html.sleekfin-details-mounted #castCollapsible .cardText {
-    color: var(--sleekfin-text);
     font: 500 13px/18px var(--sleekfin-font-family);
     padding: 6px 0 0;
     text-align: start !important;
 }
 
 html.sleekfin-details-mounted #castCollapsible .cardText-secondary {
-    color: var(--sleekfin-muted);
     font-size: 12px;
     font-weight: 400;
     padding-top: 1px;
