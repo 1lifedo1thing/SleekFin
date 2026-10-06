@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.4.3.2",
+        "changelog": "Fixed video not showing on Jellium Desktop",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.4.3.2/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "1F58B6F20E99A487C7F2BB6D9212152E",
+        "timestamp": "2026-10-06T03:02:57.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.4.3.1",
         "changelog": "Moved back button on detail pages into header, removed black area under header, and raised detail content appropriately. Also removed show more/less row in hero sections and replaced it with the text being able to be collapsed/uncollapsed on click",
         "targetAbi": "12.0.0.0",
