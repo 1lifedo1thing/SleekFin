@@ -127,6 +127,7 @@ html.sleekfin-media-mounted :is(#moviesPage, #tvshowsPage, #tvRecommendedPage) .
 }
 
 html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitleContainer-cards {
+    box-sizing: border-box;
     margin: 0 0 20px;
     max-width: none !important;
     padding-top: 28px;
@@ -143,23 +144,39 @@ html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .emby-
 }
 
 html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitle.sectionTitle-cards {
-    align-items: flex-start;
+    box-sizing: border-box;
     color: var(--sleekfin-text);
-    display: flex;
-    gap: 10px;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: max-content;
+}
+
+html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitle.sectionTitle-cards::before {
+    display: inline-block;
+    height: 30px;
+    margin-inline-end: 10px;
+    vertical-align: top;
+    width: 3px;
+}
+
+html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .seerrfin-view-more {
+    flex-shrink: 0;
 }
 
 html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitleTextButton {
     color: var(--sleekfin-text) !important;
-    flex: 0 0 auto;
-    max-width: none !important;
+    max-width: 100% !important;
+    min-width: 0;
     text-decoration: none;
-    white-space: nowrap;
     width: max-content !important;
 }
 
 html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitleTextButton > .material-icons {
     color: var(--sleekfin-muted);
+    flex-shrink: 0;
     font-size: 20px;
     transition: color 180ms ease, transform 180ms ease;
 }
@@ -346,6 +363,10 @@ html.sleekfin-media-mounted :is(#indexPage, #moviesPage, #tvshowsPage, #tvRecomm
 
 
 @media (max-width: 599px) {
+    html.sleekfin-media-mounted :is(#indexPage, [data-seerrfin-modern-panel]) .sectionTitle.sectionTitle-cards::before {
+        height: 26px;
+    }
+
     html.sleekfin-media-mounted :is(#indexPage, #moviesPage, #tvshowsPage, #tvRecommendedPage, [data-seerrfin-modern-panel]) .cardBox {
         margin-inline-end: 10px !important;
     }

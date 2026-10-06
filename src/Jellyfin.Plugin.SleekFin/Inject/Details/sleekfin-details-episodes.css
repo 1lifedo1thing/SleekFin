@@ -10,9 +10,13 @@
     min-height: 52px;
 }
 
+.sleekfin-details-episodes-header > .sleekfin-section-heading {
+    width: 100%;
+}
+
 .sleekfin-details-season-select {
     display: inline-flex;
-    max-width: min(54vw, 360px);
+    max-width: 100%;
     position: relative;
 }
 
@@ -34,6 +38,9 @@
 .sleekfin-details-season-title {
     color: var(--sleekfin-text);
     font: 600 24px/32px var(--sleekfin-font-family);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .sleekfin-details-season-title {
@@ -52,7 +59,7 @@
 }
 
 .sleekfin-details-season-trigger {
-    display: inline-flex;
+    display: block;
     text-align: left;
 }
 
@@ -65,6 +72,7 @@
 .sleekfin-details-episode-controls {
     align-items: center;
     display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: flex-end;
