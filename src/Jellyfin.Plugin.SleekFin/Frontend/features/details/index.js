@@ -17,7 +17,7 @@ const SUPPORTED_TYPES = ['Movie', 'Series', 'Season', 'Episode'];
 const VIEW_EVENTS = ['viewinit', 'viewbeforeshow', 'viewshow'];
 const WINDOW_EVENTS = ['hashchange', 'popstate', 'pageshow', 'je-hidden-content-changed'];
 const SETTINGS_EVENT = 'sleekfin:details-settings-changed';
-const DEFAULT_SETTINGS = Object.freeze({ dropdownStyle: 'Jellyfin', seasonPostersEnabled: false });
+const DEFAULT_SETTINGS = Object.freeze({ dropdownStyle: 'Jellyfin', seasonPostersEnabled: false, trailerBackgroundEnabled: false });
 const features = (window.SleekFinFeatures = window.SleekFinFeatures || {});
 
 features.details?.stop?.();
@@ -137,35 +137,39 @@ function routeClient(serverId) {
 // A stalled optional settings request must fall back to native dropdowns without blocking details.
 const SETTINGS_TIMEOUT_MS = 4000;
 let detailsSettings = null;
+let settingsRevision = 0;
 
 function loadDetailsSettings(client) {
-  if (!detailsSettings) {
-    let answered = false;
-    const fromServer = Promise.resolve().then(() => loadSettings(client))
-      .then((settings) => {
-        answered = true;
-        return settings;
-      })
-      .catch(() => DEFAULT_SETTINGS);
-    detailsSettings = Promise.race([
-      fromServer,
-      new Promise((resolve) => window.setTimeout(() => resolve(DEFAULT_SETTINGS), SETTINGS_TIMEOUT_MS)),
-    ]).then((settings) => {
-      // Retry failures on the next picker rather than caching an unavailable server's fallback.
-      if (!answered) detailsSettings = null;
-      return settings;
+  if (!client) return Promise.resolve(DEFAULT_SETTINGS);
+  if (detailsSettings?.client === client) return detailsSettings.promise;
+  const record = { client, promise: null };
+  record.promise = new Promise((resolve) => {
+    const fallback = () => {
+      // An older request must not clear a newer client's or settings save's cache.
+      if (detailsSettings === record) detailsSettings = null;
+      resolve(DEFAULT_SETTINGS);
+    };
+    const timer = window.setTimeout(fallback, SETTINGS_TIMEOUT_MS);
+    Promise.resolve().then(() => loadSettings(client)).then((settings) => {
+      window.clearTimeout(timer);
+      resolve(settings);
+    }, () => {
+      window.clearTimeout(timer);
+      fallback();
     });
-  }
-  return detailsSettings;
+  });
+  detailsSettings = record;
+  return record.promise;
 }
 
 function reloadSettings() {
   detailsSettings = null;
+  settingsRevision += 1;
 }
 
-function loadSeasons(client, userId, mediaItem) {
+function loadSeasons(client, userId, mediaItem, settingsPromise) {
   if (mediaItem.Type === 'Series') {
-    return Promise.all([client.getSeasons(mediaItem.Id, { userId }), loadDetailsSettings(client)]).then(([seasons, settings]) => ({ ...seasons, settings }));
+    return Promise.all([client.getSeasons(mediaItem.Id, { userId }), settingsPromise]).then(([seasons]) => seasons);
   }
   if (mediaItem.Type === 'Season') return Promise.resolve({ Items: [mediaItem] });
   if (mediaItem.Type === 'Episode' && mediaItem.SeasonId) return client.getItem(userId, mediaItem.SeasonId).then((season) => ({ Items: [season] }));
@@ -220,7 +224,7 @@ function mount() {
   };
   state.page.dataset.sleekfinDetails = 'true';
   document.documentElement.classList.add('sleekfin-details-mounted');
-  hero.render(state.item, state.seasons);
+  hero.render(state.item, state.seasons, state.settings.trailerBackgroundEnabled);
   actions.reconcile();
   similar.render();
   // Revealed once Jellyfin has hidden the page it is leaving, which the observer below waits for.
@@ -244,10 +248,21 @@ function load(id, serverId, sourceSelect = null) {
 
   const generation = state.generation;
   const requestId = ++state.loadRequestId;
+  const revision = settingsRevision;
   const routeId = state.currentId;
   const userId = client.getCurrentUserId();
   const isCurrent = () => requestId === state.loadRequestId && generation === state.generation && routeId === state.currentId && (!sourceSelect || sourceSelect.value === id);
   state.loadingId = id;
+  const settingsPromise = loadDetailsSettings(client).then((settings) => {
+    if (!isCurrent() || revision !== settingsRevision) return;
+    state.settings = settings;
+    if (state.mount) {
+      const seasonPosters = state.item.Type === 'Series' && settings.seasonPostersEnabled;
+      state.page.classList.toggle('sleekfin-details-season-posters', seasonPosters);
+      state.mount.hero.render(state.item, state.seasons, settings.trailerBackgroundEnabled);
+    }
+    scheduleReconcile();
+  });
   client.getItem(userId, id)
     .then((mediaItem) => {
       if (!isCurrent()) return;
@@ -262,15 +277,14 @@ function load(id, serverId, sourceSelect = null) {
 
       // Seasons only extend the view that is already on screen, so a failed season request must
       // not be handled like a failed item request.
-      loadSeasons(client, userId, mediaItem)
+      loadSeasons(client, userId, mediaItem, settingsPromise)
         .then((result) => {
           if (!isCurrent() || state.item !== mediaItem) return;
-          state.settings = result.settings || DEFAULT_SETTINGS;
           state.seasons = result.Items || [];
           if (state.mount) {
             const seasonPosters = state.item.Type === 'Series' && state.settings.seasonPostersEnabled;
             state.page.classList.toggle('sleekfin-details-season-posters', seasonPosters);
-            state.mount.hero.render(state.item, state.seasons);
+            state.mount.hero.render(state.item, state.seasons, state.settings.trailerBackgroundEnabled);
             if (!seasonPosters && !state.mount.episodes && ['Series', 'Season', 'Episode'].includes(state.item.Type) && state.seasons.length) {
               state.mount.episodes = createEpisodes(state.page, state.item, state.seasons, state.settings.dropdownStyle);
             }

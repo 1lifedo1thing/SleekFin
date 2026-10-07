@@ -1666,7 +1666,7 @@
                             </div>
 
                             <div class="sleekfin-hero-builder-content">
-                                <details class="sleekfin-hero-accordion" open>
+                                <details class="sleekfin-hero-accordion">
                                     <summary>Content rules</summary>
                                     <div class="sleekfin-hero-settings">
                                         <div class="sleekfin-hero-setting-row">
@@ -1695,7 +1695,7 @@
                                     </div>
                                 </details>
 
-                                <details class="sleekfin-hero-accordion" open>
+                                <details class="sleekfin-hero-accordion">
                                     <summary>Layout</summary>
                                     <div class="sleekfin-hero-settings">
                                         <div class="sleekfin-hero-setting-row">
@@ -1737,9 +1737,21 @@
                                     </div>
                                 </details>
 
-                                <details class="sleekfin-hero-accordion" open>
-                                    <summary>Artwork</summary>
+                                <details class="sleekfin-hero-accordion">
+                                    <summary>Artwork + Trailer</summary>
                                     <div class="sleekfin-hero-settings">
+                                        <div class="sleekfin-hero-setting-row">
+                                            <div class="sleekfin-toggle-copy">
+                                                <label class="sleekfin-hero-setting-label" for="sleekFinDetailsTrailerBackgroundEnabled">Play trailers in detail backgrounds</label>
+                                                <div class="sleekfin-field-description">Play available local, remote-video, or YouTube trailers muted on detail pages. Keep static artwork when none can play.</div>
+                                            </div>
+                                            <div class="sleekfin-toggle-actions">
+                                                <label class="sleekfin-toggle">
+                                                    <input id="sleekFinDetailsTrailerBackgroundEnabled" type="checkbox" />
+                                                    <span class="sleekfin-toggle-slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
                                         <div class="sleekfin-hero-setting-row">
                                             <span class="sleekfin-hero-setting-label">Title treatment</span>
                                             <div class="sleekfin-choice-group">
@@ -1778,7 +1790,7 @@
                                     </div>
                                 </details>
 
-                                <details class="sleekfin-hero-accordion" open>
+                                <details class="sleekfin-hero-accordion">
                                     <summary>Type &amp; metadata</summary>
                                     <div class="sleekfin-hero-settings">
                                         <div class="sleekfin-hero-setting-grid sleekfin-hero-setting-grid--4">
@@ -1849,7 +1861,7 @@
                                     </div>
                                 </details>
 
-                                <details class="sleekfin-hero-accordion" open>
+                                <details class="sleekfin-hero-accordion">
                                     <summary>Actions</summary>
                                     <div class="sleekfin-hero-settings">
                                         <div class="sleekfin-hero-setting-grid sleekfin-hero-setting-grid--3">
@@ -1903,7 +1915,7 @@
                                     </div>
                                 </details>
 
-                                <details class="sleekfin-hero-accordion" open>
+                                <details class="sleekfin-hero-accordion">
                                     <summary>Motion &amp; blending</summary>
                                     <div class="sleekfin-hero-settings">
                                         <div class="sleekfin-hero-setting-grid sleekfin-hero-setting-grid--3">
@@ -2148,6 +2160,7 @@
             var enabledInput = document.getElementById('sleekFinEnabled');
             var heroEnabledInput = document.getElementById('sleekFinHeroEnabled');
             var detailsEnabledInput = document.getElementById('sleekFinDetailsEnabled');
+            var detailsTrailerBackgroundInput = document.getElementById('sleekFinDetailsTrailerBackgroundEnabled');
             var detailsSeasonPostersInput = document.getElementById('sleekFinDetailsSeasonPostersEnabled');
             var dropdownStyleInput = document.getElementById('sleekFinDropdownStyle');
             var accentInput = document.getElementById('sleekFinAccentColor');
@@ -2347,7 +2360,7 @@
 
             var missingHeroField = Object.keys(heroFields).some(function (name) { return !heroFields[name]; });
 
-            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !detailsSeasonPostersInput || !dropdownStyleInput || !accentInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
+            if (!page || !form || !enabledInput || !heroEnabledInput || !detailsEnabledInput || !detailsTrailerBackgroundInput || !detailsSeasonPostersInput || !dropdownStyleInput || !accentInput || !randomizedInput || !sources || !dependencyStatus || !preview || !previewBar || !palette || !previewBrand || !previewMenu || !previewDrawer || !heroPreview || !heroPreviewBackdrop || !heroPreviewLogo || !heroPreviewTitle || !heroPreviewFacts || !heroPreviewDescription || !heroReset || missingHeroField || page.dataset.sleekfinBound === 'true') {
                 return;
             }
 
@@ -3724,6 +3737,7 @@
                         enabledInput.checked = readValue(configuration, 'HeaderEnabled') !== false;
                         heroEnabledInput.checked = readValue(configuration, 'HeroEnabled') !== false;
                         detailsEnabledInput.checked = readValue(configuration, 'DetailsEnabled') !== false;
+                        detailsTrailerBackgroundInput.checked = readValue(configuration, 'DetailsTrailerBackgroundEnabled') === true;
                         detailsSeasonPostersInput.checked = readValue(configuration, 'DetailsSeasonPostersEnabled') === true;
                         var dropdownStyle = readValue(configuration, 'DropdownStyle');
                         dropdownStyleInput.value = ['Jellyfin', 'SeerrFin', 'Native'].indexOf(dropdownStyle) !== -1 ? dropdownStyle : dropdownStyle === undefined && readValue(configuration, 'DetailsSeasonPickerEnabled') === true ? 'SeerrFin' : 'Jellyfin';
@@ -3798,6 +3812,7 @@
                         configuration.HeaderEnabled = enabledInput.checked;
                         configuration.HeroEnabled = heroEnabledInput.checked;
                         configuration.DetailsEnabled = detailsEnabledInput.checked;
+                        configuration.DetailsTrailerBackgroundEnabled = detailsTrailerBackgroundInput.checked;
                         configuration.DetailsSeasonPostersEnabled = detailsSeasonPostersInput.checked;
                         configuration.DropdownStyle = dropdownStyleInput.value;
                         configuration.DetailsSeasonPickerEnabled = dropdownStyleInput.value === 'SeerrFin';
@@ -3829,6 +3844,9 @@
                         element.classList.toggle('is-active', element.dataset.sleekfinPanel === panel);
                     });
                     if (panel === 'ui-builder') {
+                        Array.prototype.forEach.call(page.querySelectorAll('.sleekfin-hero-accordion[open]'), function (section) {
+                            section.open = false;
+                        });
                         updatePreviewMeasurements();
                         updateHeroPreview();
                     }

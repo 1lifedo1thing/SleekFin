@@ -6,5 +6,6 @@ export function loadSettings(client) {
   }).then((settings) => ({
     dropdownStyle: ['Jellyfin', 'SeerrFin', 'Native'].includes(settings?.dropdownStyle) ? settings.dropdownStyle : 'Jellyfin',
     seasonPostersEnabled: settings?.seasonPostersEnabled === true,
+    trailerBackgroundEnabled: settings?.trailerBackgroundEnabled === true,
   }));
 }

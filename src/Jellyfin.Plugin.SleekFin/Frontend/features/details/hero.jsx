@@ -1,4 +1,5 @@
 import { Facts, h, IconButton, item, dom, render } from '../../shared/runtime.js';
+import { createTrailerPreview } from './trailer.js';
 
 function goBack() {
   if (window.history.length > 1) {
@@ -45,6 +46,7 @@ export function createHero(page) {
   const factsValuesRoot = dom.element('<span class="sleekfin-details-fact-values"></span>');
   factsRoot.appendChild(factsValuesRoot);
   const genresRoot = stack.querySelector('.sleekfin-details-genres');
+  const trailerPreview = createTrailerPreview(page, nativeBackdrop, actions);
   const logo = page.querySelector('.detailLogo');
   const name = page.querySelector('.nameContainer');
   const overview = page.querySelector('.overview');
@@ -67,7 +69,7 @@ export function createHero(page) {
     moved = [];
   }
 
-  function renderHero(mediaItem, seasons) {
+  function renderHero(mediaItem, seasons, trailerBackgroundEnabled) {
     const backdropUrl = item.imageUrl(mediaItem, 'Backdrop', { maxWidth: Math.max(960, window.innerWidth), inherit: true, quality: 90 });
     const isChild = mediaItem.Type === 'Season' || mediaItem.Type === 'Episode';
     actions.dataset.sleekfinCanDownload = String(['Movie', 'Episode'].includes(mediaItem.Type) && mediaItem.CanDownload === true && (!window.NativeShell || window.NativeShell.AppHost.supports('filedownload')));
@@ -81,6 +83,7 @@ export function createHero(page) {
     if (backdropUrl) {
       nativeBackdrop.style.backgroundImage = `url("${backdropUrl.replace(/["\\]/g, '\\$&')}")`;
     }
+    trailerPreview.update(mediaItem, trailerBackgroundEnabled);
   }
 
   function sync() {
@@ -112,6 +115,7 @@ export function createHero(page) {
   return {
     actions,
     destroy() {
+      trailerPreview.destroy();
       delete actions.dataset.sleekfinCanDownload;
       overview?.removeAttribute('title');
       render(null, backRoot);

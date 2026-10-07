@@ -17,7 +17,8 @@ public sealed class SleekFinDetailsController : ControllerBase
         return Ok(new
         {
             dropdownStyle = configuration.DropdownStyle,
-            seasonPostersEnabled = configuration.DetailsSeasonPostersEnabled
+            seasonPostersEnabled = configuration.DetailsSeasonPostersEnabled,
+            trailerBackgroundEnabled = configuration.DetailsTrailerBackgroundEnabled
         });
     }
 }
