@@ -10,6 +10,15 @@
     "repositoryUrl": "https://github.com/varunaditya-plus/SleekFin",
     "versions": [
       {
+        "version": "1.5.1.0",
+        "changelog": "Added optional muted trailer backgrounds to hero section on detail pages which support local, remote and YouTube trailers. Added the option to the Hero UI Builder under “Artwork + Trailer”. Also made all builder sections start collapsed. Changes by @T9es and @varunaditya-plus",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/varunaditya-plus/SleekFin/releases/download/1.5.1.0/Jellyfin.Plugin.SleekFin_12.0.0.zip",
+        "checksum": "530B2131F92B4ABE3E53E6D50F1AE853",
+        "timestamp": "2026-10-07T23:10:03.0000000Z",
+        "dependencies": []
+      },
+      {
         "version": "1.5.0.0",
         "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskinned Jellyfin dialogs, SleekFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
         "targetAbi": "12.0.0.0",

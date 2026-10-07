@@ -1,14 +1,14 @@
 {
   "category": "General",
-  "changelog": "Updated detail actions and expanded the Info modal to have media settings, credits, IMDb/TMDB links, availability and tags. Added circular Jellyfin Enhanced buttons, reskinned Jellyfin dialogs, SleekFin-style \"More\" menus, configurable dropdowns, optional season posters instead of dropdowns to change the current season. Also updated episode/season card controls, added audio languages to hero info. Also improved availability refreshes and provider lists",
+  "changelog": "Added optional muted trailer backgrounds to hero section on detail pages which support local, remote and YouTube trailers. Added the option to the Hero UI Builder under “Artwork + Trailer”. Also made all builder sections start collapsed. Changes by @T9es and @varunaditya-plus",
   "description": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "guid": "da36c4ef-1d10-4169-8a68-26b194d5301a",
   "name": "SleekFin",
   "overview": "The ultimate Jellyfin Web revamp, with new elements, styles, plus compatible with the most popular plugins.",
   "owner": "varunaditya-plus",
   "targetAbi": "12.0.0.0",
-  "timestamp": "2026-10-06T21:39:17.0000000Z",
-  "version": "1.5.0.0",
+  "timestamp": "2026-10-07T23:10:03.0000000Z",
+  "version": "1.5.1.0",
   "status": "Active",
   "autoUpdate": true,
   "assemblies": [
